@@ -103,6 +103,7 @@ let priceCache = {};
 let pricesLoaded = false;
 let latestLeadSignature = "";
 let pollingLead = false;
+let autoScrollMessages = false;
 
 function resizeCanvas() {
   pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -656,7 +657,9 @@ function addMessage(text, owner = "bot", extraClass = "") {
   message.className = `message ${owner} ${extraClass}`.trim();
   message.textContent = text;
   chatBody.append(message);
-  chatBody.scrollTop = chatBody.scrollHeight;
+  if (autoScrollMessages) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
   return message;
 }
 
@@ -845,6 +848,7 @@ function finishChat() {
 async function restartChat() {
   stepIndex = 0;
   answers = {};
+  autoScrollMessages = false;
   chatBody.innerHTML = "";
   quickReplies.innerHTML = "";
   if (!chatForm.isConnected) {
@@ -861,6 +865,9 @@ async function restartChat() {
   await showInitialHistory();
   nextUnansweredStep();
   askCurrentStep();
+  chatBody.scrollTop = 0;
+  window.scrollTo(0, 0);
+  autoScrollMessages = true;
 }
 
 async function pollForNewLead() {
