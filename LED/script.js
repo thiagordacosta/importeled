@@ -5,7 +5,6 @@ const chatFooter = document.querySelector(".chat-footer");
 const quickReplies = document.querySelector("#quick-replies");
 const chatForm = document.querySelector("#chat-form");
 const chatInput = document.querySelector("#chat-message");
-const restartButton = document.querySelector("#restart-button");
 
 const SHEET_ID = "1mHNTXO5nT57HZED-LdrfcfaWE1i0heuDNB4qofOMMxk";
 const SHEET_GID = new URLSearchParams(window.location.search).get("gid") || "0";
@@ -625,12 +624,7 @@ async function showInitialHistory() {
         return;
       }
 
-      addMessage(
-        `Olá, ${answers.name || "tudo bem"}! O valor estimado dos painéis nacionalizados é ${brlCurrency(quote.nationalizedTotal)}. Esse valor é antes da instalação.`
-      );
-      addMessage(
-        `Considerei ${labelFor("application", quote.application)}, ${labelFor("distance", quote.distance)}, ${quote.area} m², ${quote.pitch} e preço base de ${currency(quote.usdPerM2)} por m².`
-      );
+      addMessage(`Olá, ${answers.name || "tudo bem"}!`);
       return;
     }
 
@@ -907,7 +901,6 @@ chatForm.addEventListener("submit", (event) => {
   handleAnswer(chatInput.value);
 });
 
-restartButton.addEventListener("click", restartChat);
 window.addEventListener("resize", resizeCanvas);
 window.setInterval(pollForNewLead, LEAD_POLL_INTERVAL_MS);
 
