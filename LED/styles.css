@@ -338,6 +338,12 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  width: 100% !important;
+}
+
+.quick-replies:has(.schedule-button) {
+  display: block !important;
+  width: 100% !important;
 }
 
 .reply-button {
@@ -358,6 +364,14 @@ h1 {
 .reply-button.whatsapp {
   border-color: rgba(25, 179, 106, 0.62);
   background: var(--green);
+}
+
+.reply-button.schedule-button {
+  display: block !important;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 48px !important;
 }
 
 .calendly-card {
