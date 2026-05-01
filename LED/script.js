@@ -1,6 +1,7 @@
 const canvas = document.querySelector("#led-canvas");
 const ctx = canvas.getContext("2d");
 const chatBody = document.querySelector("#chat-body");
+const chatFooter = document.querySelector(".chat-footer");
 const quickReplies = document.querySelector("#quick-replies");
 const chatForm = document.querySelector("#chat-form");
 const chatInput = document.querySelector("#chat-message");
@@ -759,6 +760,9 @@ function handleAnswer(value, displayValue = value) {
   quickReplies.innerHTML = "";
   chatInput.value = "";
   chatInput.disabled = false;
+  if (step.key === "city") {
+    chatForm.remove();
+  }
   askCurrentStep();
 }
 
@@ -813,6 +817,7 @@ function finishChat() {
     addDisqualifiedSummary();
     chatInput.disabled = true;
     chatInput.placeholder = "Oportunidade abaixo de 8 m²";
+    chatForm.hidden = true;
     quickReplies.innerHTML = "";
 
     const restart = document.createElement("button");
@@ -826,7 +831,7 @@ function finishChat() {
 
   addSummary();
   chatInput.disabled = true;
-  chatInput.placeholder = "Resumo gerado";
+  chatForm.hidden = true;
   quickReplies.innerHTML = "";
 
   const button = document.createElement("button");
@@ -835,23 +840,6 @@ function finishChat() {
   button.textContent = "Agendar visita técnica da instalação";
   button.addEventListener("click", showCalendlyEmbed);
   quickReplies.append(button);
-
-  const whatsapp = document.createElement("button");
-  whatsapp.type = "button";
-  whatsapp.className = "reply-button";
-  whatsapp.textContent = "Enviar orçamento no WhatsApp";
-  whatsapp.addEventListener("click", () => {
-    const url = `https://wa.me/${cleanPhone(answers.phone)}?text=${encodeURIComponent(whatsappMessage())}`;
-    window.open(url, "_blank", "noopener,noreferrer");
-  });
-  quickReplies.append(whatsapp);
-
-  const restart = document.createElement("button");
-  restart.type = "button";
-  restart.className = "reply-button";
-  restart.textContent = "Nova cotação";
-  restart.addEventListener("click", restartChat);
-  quickReplies.append(restart);
 }
 
 async function restartChat() {
@@ -859,6 +847,10 @@ async function restartChat() {
   answers = {};
   chatBody.innerHTML = "";
   quickReplies.innerHTML = "";
+  if (!chatForm.isConnected) {
+    chatFooter.append(chatForm);
+  }
+  chatForm.hidden = false;
   chatInput.value = "";
   chatInput.disabled = false;
   try {
