@@ -10,6 +10,7 @@ const SHEET_ID = "1mHNTXO5nT57HZED-LdrfcfaWE1i0heuDNB4qofOMMxk";
 const SHEET_GID = new URLSearchParams(window.location.search).get("gid") || "0";
 const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}`;
 const PRICE_CACHE_URL = "data/prices_cache.json";
+const CALENDLY_URL = "https://calendly.com/thiago-caring/30min";
 const LEAD_POLL_INTERVAL_MS = 30000;
 
 const PRICE_TARGETS = {
@@ -786,6 +787,27 @@ function whatsappMessage() {
   ].join(" ");
 }
 
+function showCalendlyEmbed() {
+  quickReplies.innerHTML = "";
+  chatInput.disabled = true;
+  chatInput.placeholder = "Agendamento aberto";
+
+  const container = document.createElement("div");
+  container.className = "message bot calendly-card";
+  container.innerHTML = `
+    <strong>Escolha o melhor horário para a visita técnica.</strong>
+    <div class="calendly-inline-widget" data-url="${CALENDLY_URL}" title="Calendly - visita técnica"></div>
+  `;
+  chatBody.append(container);
+
+  const widget = container.querySelector(".calendly-inline-widget");
+  if (window.Calendly?.initInlineWidget) {
+    window.Calendly.initInlineWidget({ url: CALENDLY_URL, parentElement: widget });
+  }
+
+  chatBody.scrollTop = container.offsetTop - chatBody.offsetTop;
+}
+
 function finishChat() {
   if (!getQuote().qualifiedOpportunity) {
     addDisqualifiedSummary();
@@ -811,11 +833,18 @@ function finishChat() {
   button.type = "button";
   button.className = "reply-button whatsapp";
   button.textContent = "Agendar visita técnica da instalação";
-  button.addEventListener("click", () => {
+  button.addEventListener("click", showCalendlyEmbed);
+  quickReplies.append(button);
+
+  const whatsapp = document.createElement("button");
+  whatsapp.type = "button";
+  whatsapp.className = "reply-button";
+  whatsapp.textContent = "Enviar orçamento no WhatsApp";
+  whatsapp.addEventListener("click", () => {
     const url = `https://wa.me/${cleanPhone(answers.phone)}?text=${encodeURIComponent(whatsappMessage())}`;
     window.open(url, "_blank", "noopener,noreferrer");
   });
-  quickReplies.append(button);
+  quickReplies.append(whatsapp);
 
   const restart = document.createElement("button");
   restart.type = "button";

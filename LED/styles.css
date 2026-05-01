@@ -360,6 +360,28 @@ h1 {
   background: var(--green);
 }
 
+.calendly-card {
+  max-width: 100%;
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.calendly-card strong {
+  color: #fff;
+  font-size: 18px;
+}
+
+.calendly-inline-widget {
+  width: 100%;
+  min-width: 320px;
+  height: 660px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
 .chat-input {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 46px;
