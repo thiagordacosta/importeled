@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ImporteLED | Painéis de LED nacionalizados</title>
+    <meta
+      name="description"
+      content="Painéis de LED importados com preço nacionalizado, entrega em 90 dias, isenção de ICMS-ST e pagamento em três parcelas."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --surface: #f5f6f8;
+        --ink: #0b1220;
+        --ink-soft: #44506b;
+        --muted: #8892a6;
+        --line: #e7eaf0;
+        --accent: #1f6bff;
+        --accent-ink: #ffffff;
+        --orange: #ff6a13;
+        --radius: 18px;
+        --radius-sm: 10px;
+        --maxw: 1120px;
+        --shadow: 0 1px 2px rgba(10, 20, 40, 0.04), 0 8px 28px rgba(10, 20, 40, 0.05);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { margin: 0; padding: 0; }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      .container {
+        max-width: var(--maxw);
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* Header */
+      .site-header {
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: saturate(140%) blur(14px);
+        -webkit-backdrop-filter: saturate(140%) blur(14px);
+        border-bottom: 1px solid var(--line);
+        z-index: 20;
+      }
+      .site-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 68px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--accent), #5aa0ff);
+      }
+      .nav {
+        display: flex;
+        gap: 28px;
+        color: var(--ink-soft);
+        font-size: 14.5px;
+      }
+      .nav a:hover { color: var(--ink); }
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: var(--ink);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .nav-cta:hover { background: #1a2235; }
+
+      @media (max-width: 720px) {
+        .nav { display: none; }
+      }
+
+      /* Hero / Nosso Modelo */
+      .hero {
+        padding: 80px 0 56px;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .hero-visual {
+        background: var(--surface);
+        border-radius: var(--radius);
+        aspect-ratio: 4 / 3;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        padding: 28px;
+      }
+      .hero-visual .tile {
+        border-radius: 12px;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06), transparent 40%),
+          repeating-linear-gradient(0deg, #111827 0 3px, #0a0f1c 3px 6px),
+          repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 3px, transparent 3px 6px);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      }
+      .hero-visual .tile.matte {
+        background:
+          repeating-linear-gradient(90deg, #1b2332 0 2px, #0e1522 2px 4px),
+          repeating-linear-gradient(0deg, rgba(0,0,0,0.25) 0 2px, transparent 2px 4px);
+      }
+      .eyebrow {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0 0 14px;
+      }
+      h1 {
+        font-size: clamp(36px, 5vw, 56px);
+        line-height: 1.05;
+        letter-spacing: -0.025em;
+        margin: 0 0 20px;
+        font-weight: 800;
+      }
+      .lead {
+        color: var(--ink-soft);
+        font-size: 17px;
+        max-width: 520px;
+        margin: 0 0 28px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 22px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 15px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: var(--accent-ink);
+        box-shadow: 0 8px 24px rgba(31, 107, 255, 0.25);
+      }
+      .btn-primary:hover { background: #155ae0; transform: translateY(-1px); }
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--line);
+      }
+      .btn-ghost:hover { border-color: var(--ink); }
+
+      @media (max-width: 860px) {
+        .hero { padding: 56px 0 40px; }
+        .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      }
+
+      /* Section */
+      section.block { padding: 88px 0; }
+      .section-head {
+        text-align: center;
+        max-width: 640px;
+        margin: 0 auto 48px;
+      }
+      .section-head h2 {
+        font-size: clamp(28px, 3.4vw, 40px);
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+        font-weight: 700;
+      }
+      .section-head p {
+        color: var(--ink-soft);
+        margin: 0;
+      }
+
+      /* Pré-requisitos */
+      .requirements {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+      .req-card {
+        padding: 28px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: #fff;
+        transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+      }
+      .req-card:hover {
+        border-color: #d7dce5;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+      .req-num {
+        font-size: 13px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.04em;
+      }
+      .req-card h3 {
+        font-size: 17px;
+        margin: 12px 0 10px;
+        letter-spacing: -0.01em;
+      }
+      .req-card p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 14.5px;
+      }
+      @media (max-width: 980px) { .requirements { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 520px) { .requirements { grid-template-columns: 1fr; } }
+
+      /* Banner simples */
+      .banner {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 56px 32px;
+        text-align: center;
+      }
+      .banner h2 {
+        font-size: clamp(28px, 3.4vw, 40px);
+        margin: 0 0 10px;
+        letter-spacing: -0.02em;
+      }
+      .banner p { color: var(--ink-soft); margin: 0; }
+
+      /* Caso de Sucesso */
+      .case-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+      .case-copy {
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .case-copy h2 {
+        font-size: clamp(30px, 3.6vw, 42px);
+        letter-spacing: -0.02em;
+        margin: 0 0 16px;
+      }
+      .case-copy p {
+        color: var(--ink-soft);
+        margin: 0 0 24px;
+        max-width: 440px;
+      }
+      .case-visual {
+        background: var(--orange);
+        border-radius: var(--radius);
+        min-height: 340px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .case-logo {
+        font-size: 64px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        opacity: 0.95;
+      }
+      @media (max-width: 860px) { .case-grid { grid-template-columns: 1fr; } }
+
+      /* Parcelas */
+      .installments {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 40px;
+      }
+      .inst-card {
+        text-align: center;
+        padding: 32px 20px;
+        border-top: 1px solid var(--line);
+      }
+      .inst-pct {
+        font-size: 56px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0;
+        color: var(--ink);
+      }
+      .inst-card h4 {
+        margin: 8px 0 6px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .inst-card p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      @media (max-width: 720px) {
+        .installments { grid-template-columns: 1fr; }
+        .inst-card { border-top: 1px solid var(--line); }
+      }
+
+      /* ICMS */
+      .icms {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 48px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+      }
+      .icms h2 {
+        font-size: clamp(28px, 3.4vw, 38px);
+        letter-spacing: -0.02em;
+        margin: 0 0 14px;
+      }
+      .icms p {
+        color: var(--ink-soft);
+        margin: 0 0 24px;
+        max-width: 460px;
+      }
+      .icms-visual {
+        aspect-ratio: 16 / 10;
+        border-radius: 14px;
+        background:
+          linear-gradient(135deg, rgba(31,107,255,0.9), rgba(255,106,19,0.9)),
+          repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 2px, transparent 2px 4px);
+        background-blend-mode: multiply;
+      }
+      @media (max-width: 860px) {
+        .icms { grid-template-columns: 1fr; padding: 32px; }
+      }
+
+      /* Footer */
+      footer.site-footer {
+        border-top: 1px solid var(--line);
+        padding: 32px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .footer-inner a:hover { color: var(--ink); }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="#top" aria-label="ImporteLED">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>ImporteLED</span>
+        </a>
+        <nav class="nav" aria-label="Navegação principal">
+          <a href="#modelo">Modelo</a>
+          <a href="#requisitos">Pré-requisitos</a>
+          <a href="#caso">Caso de sucesso</a>
+          <a href="#pagamento">Pagamento</a>
+        </nav>
+        <a class="nav-cta" href="LED/">Falar com consultor</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- Hero / Nosso Modelo -->
+      <section class="block hero" id="modelo">
+        <div class="container hero-grid">
+          <div class="hero-visual" aria-hidden="true">
+            <div class="tile"></div>
+            <div class="tile matte"></div>
+          </div>
+          <div>
+            <p class="eyebrow">Nosso Modelo</p>
+            <h1>Painéis de LED importados, com preço já nacionalizado.</h1>
+            <p class="lead">
+              Atendemos fornecedores e integradores com custo transparente, entrega previsível e suporte técnico
+              para instalação no Brasil.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <a class="btn btn-primary" href="LED/">Começar orçamento</a>
+              <a class="btn btn-ghost" href="#requisitos">Ver pré-requisitos</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pré-requisitos -->
+      <section class="block" id="requisitos" style="padding-top:40px;">
+        <div class="container">
+          <div class="section-head">
+            <h2>Pré-requisitos</h2>
+            <p>O que sua operação precisa ter para avançar com a importação e a instalação.</p>
+          </div>
+          <div class="requirements">
+            <article class="req-card">
+              <div class="req-num">01</div>
+              <h3>Importador ativo</h3>
+              <p>CNPJ habilitado no Radar Siscomex para realizar operações de importação.</p>
+            </article>
+            <article class="req-card">
+              <div class="req-num">02</div>
+              <h3>Certificado Digital e-CNPJ</h3>
+              <p>Certificado válido para assinatura dos documentos e acesso aos portais aduaneiros.</p>
+            </article>
+            <article class="req-card">
+              <div class="req-num">03</div>
+              <h3>Certificado Digital e-CPF</h3>
+              <p>Certificado do representante legal para autenticações e procurações eletrônicas.</p>
+            </article>
+            <article class="req-card">
+              <div class="req-num">04</div>
+              <h3>Doc. Consular Atualizada</h3>
+              <p>Documentação consular em dia para emissão e liberação da mercadoria no destino.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Banner: Entrega em 90 dias -->
+      <section class="block" style="padding-top:24px;">
+        <div class="container">
+          <div class="banner">
+            <h2>Entrega em 90 dias</h2>
+            <p>Prazo desde a confirmação do pedido até a chegada no seu endereço.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Caso de Sucesso -->
+      <section class="block" id="caso">
+        <div class="container case-grid">
+          <div class="case-copy">
+            <h2>Caso de Sucesso</h2>
+            <p>
+              Um parceiro nacional fechou a primeira operação com a ImporteLED e recebeu o painel em
+              90 dias, com custo abaixo da média praticada no mercado e acompanhamento técnico de ponta a ponta.
+            </p>
+            <div>
+              <a class="btn btn-primary" href="LED/">Ler caso</a>
+            </div>
+          </div>
+          <div class="case-visual" aria-hidden="true">
+            <div class="case-logo">ᴀᴘ</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pagamento -->
+      <section class="block" id="pagamento" style="padding-top:24px;">
+        <div class="container">
+          <div class="section-head">
+            <h2>Pagamento em Três Parcelas</h2>
+            <p>Fluxo previsível, sem juros adicionais ao longo da operação.</p>
+          </div>
+          <div class="installments">
+            <div class="inst-card">
+              <p class="inst-pct">0%</p>
+              <h4>D+0</h4>
+              <p>Entrada no fechamento do pedido.</p>
+            </div>
+            <div class="inst-card">
+              <p class="inst-pct">0%</p>
+              <h4>D+30</h4>
+              <p>Parcela vinculada à produção e ao embarque.</p>
+            </div>
+            <div class="inst-card">
+              <p class="inst-pct">0%</p>
+              <h4>D+90</h4>
+              <p>Parcela final na chegada e aceite da mercadoria.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ICMS-ST -->
+      <section class="block" style="padding-top:24px;">
+        <div class="container">
+          <div class="icms">
+            <div>
+              <h2>Isenção de ICMS-ST</h2>
+              <p>
+                Estruturamos a operação para que o painel seja fornecido com isenção de ICMS-ST,
+                reduzindo o custo final e mantendo a conformidade fiscal em todas as etapas da importação.
+              </p>
+              <a class="btn btn-primary" href="LED/">Simular</a>
+            </div>
+            <div class="icms-visual" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>© ImporteLED · Painéis de LED nacionalizados</span>
+        <span><a href="LED/">Falar com um consultor</a></span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ImporteLED | Preço nacionalizado e visita técnica</title>
+    <meta
+      name="description"
+      content="Chat para consultar preço nacionalizado de painéis de LED e agendar visita técnica de instalação."
+    />
+    <link rel="stylesheet" href="styles.css?v=20260502-address-flow" />
+  </head>
+  <body>
+    <canvas id="led-canvas" aria-hidden="true"></canvas>
+    <div class="backdrop" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <aside class="intro-panel" aria-label="Resumo da ImporteLED">
+        <a class="brand" href="#" aria-label="ImporteLED">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>ImporteLED</span>
+        </a>
+
+        <div class="intro-copy">
+          <p class="eyebrow">Preço nacionalizado</p>
+          <h1>Veja o custo do painel no Brasil e agende uma visita técnica.</h1>
+          <p>
+            Vim do seu pedido no anúncio da Meta. Vou recuperar seus dados, mostrar uma prévia do produto
+            nacionalizado e conectar você com um agente para visita técnica.
+          </p>
+        </div>
+
+        <dl class="signal-list">
+          <div>
+            <dt>Indoor</dt>
+            <dd>Valor estimado já nacionalizado em reais.</dd>
+          </div>
+          <div>
+            <dt>Instalação</dt>
+            <dd>Conversa com agente para avaliar montagem.</dd>
+          </div>
+          <div>
+            <dt>Visita técnica</dt>
+            <dd>Agendamento para medir, validar acesso e estrutura.</dd>
+          </div>
+        </dl>
+      </aside>
+
+      <section class="chat-panel" aria-label="Chat de orçamento">
+        <header class="chat-header">
+          <div>
+            <span class="agent-status"></span>
+            <strong>Consultor ImporteLED</strong>
+            <small>online agora</small>
+          </div>
+        </header>
+
+        <div class="chat-body" id="chat-body" aria-live="polite"></div>
+
+        <footer class="chat-footer">
+          <div class="quick-replies" id="quick-replies"></div>
+        </footer>
+      </section>
+    </main>
+
+    <script src="script.js?v=20260502-email-flow"></script>
+  </body>
+</html>
