@@ -3,13 +3,13 @@ const ctx = canvas.getContext("2d");
 const chatBody = document.querySelector("#chat-body");
 const chatFooter = document.querySelector(".chat-footer");
 const quickReplies = document.querySelector("#quick-replies");
-const chatForm = document.querySelector("#chat-form");
-const chatInput = document.querySelector("#chat-message");
 
 const SHEET_ID = "1mHNTXO5nT57HZED-LdrfcfaWE1i0heuDNB4qofOMMxk";
 const SHEET_GID = new URLSearchParams(window.location.search).get("gid") || "0";
 const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}`;
 const PRICE_CACHE_URL = "data/prices_cache.json";
+const ZIP_LOOKUP_URL = "https://viacep.com.br/ws";
+const SCHEDULE_EMAIL_ENDPOINT = "https://formsubmit.co/thiago@caring.com.br";
 const LEAD_POLL_INTERVAL_MS = 30000;
 
 const PRICE_TARGETS = {
@@ -220,6 +220,18 @@ function compactPhone(value) {
   return String(value || "").replace(/\D/g, "");
 }
 
+function compactZipCode(value) {
+  return String(value || "").replace(/\D/g, "").slice(0, 8);
+}
+
+function formatZipCode(value) {
+  const digits = compactZipCode(value);
+  if (digits.length !== 8) {
+    return value || "";
+  }
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+}
+
 function rowHasAnyValue(row) {
   return Object.entries(row).some(([key, value]) => key !== "__cellsByLetter" && String(value || "").trim());
 }
@@ -347,11 +359,13 @@ function applyAgentAnswers(agent) {
 
 function hydrateAnswersFromLatestRow(row) {
   const agent = readAgentColumns(row);
+  const zipCodeFromColumn = getColumn(row, "Y");
   const fieldMap = {
     name: ["full name", "nome", "name"],
     email: ["email", "e-mail", "mail", "endereco_de_email", "endereço_de_email"],
     phone: ["phone", "telefone", "whatsapp", "phone_number"],
     city: ["cidade", "city", "local", "localização", "endereco", "endereço"],
+    zipCode: ["cep", "zip", "zipcode", "zip_code", "codigo_postal", "código_postal", "postal_code"],
   };
 
   Object.entries(fieldMap).forEach(([key, candidates]) => {
@@ -360,6 +374,10 @@ function hydrateAnswersFromLatestRow(row) {
       answers[key] = value;
     }
   });
+
+  if (zipCodeFromColumn) {
+    answers.zipCode = zipCodeFromColumn;
+  }
 
   applyAgentAnswers(agent);
 
@@ -405,6 +423,8 @@ function formatLoadedContext(row) {
   ]);
   const phone = getField(row, ["phone", "telefone", "whatsapp", "phone_number"]);
   const city = getField(row, ["cidade", "city", "local", "localização", "endereco", "endereço"]);
+  const zipCode =
+    getColumn(row, "Y") || getField(row, ["cep", "zip", "zipcode", "zip_code", "codigo_postal", "código_postal", "postal_code"]);
 
   if (name) {
     parts.push(`nome: ${name}`);
@@ -430,8 +450,71 @@ function formatLoadedContext(row) {
   if (city) {
     parts.push(`cidade: ${city}`);
   }
+  if (zipCode) {
+    parts.push(`CEP: ${zipCode}`);
+  }
 
   return parts.length ? parts.join(" · ") : formatHistoryLine(row, 0);
+}
+
+function formatAddress(address) {
+  if (!address) {
+    return "";
+  }
+  return [address.street, address.neighborhood, address.city, address.state].filter(Boolean).join(" · ");
+}
+
+async function lookupZipCode(zipCode) {
+  const digits = compactZipCode(zipCode);
+  if (digits.length !== 8) {
+    return null;
+  }
+
+  let response;
+  try {
+    response = await fetch(`${ZIP_LOOKUP_URL}/${digits}/json/`);
+  } catch (error) {
+    return null;
+  }
+
+  if (!response.ok) {
+    return null;
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    return null;
+  }
+
+  if (data.erro) {
+    return null;
+  }
+
+  return {
+    zipCode: formatZipCode(data.cep || digits),
+    street: data.logradouro || "",
+    neighborhood: data.bairro || "",
+    city: data.localidade || "",
+    state: data.uf || "",
+  };
+}
+
+async function hydrateAddressFromZip() {
+  if (!answers.zipCode || answers.address) {
+    return answers.address || null;
+  }
+
+  const address = await lookupZipCode(answers.zipCode);
+  if (address) {
+    answers.zipCode = address.zipCode;
+    answers.address = address;
+    if (!answers.city && address.city) {
+      answers.city = `${address.city}, ${address.state}`;
+    }
+  }
+  return address;
 }
 
 function getLatestRow(rows) {
@@ -621,18 +704,20 @@ async function showInitialHistory() {
       const quote = getQuote();
       if (!quote.qualifiedOpportunity) {
         addDisqualifiedSummary();
-        return;
+        return true;
       }
 
-      addMessage(`Olá, ${answers.name || "tudo bem"}!`);
-      return;
+      finishChat();
+      return true;
     }
 
     addMessage("Recebi seus dados e vou completar as informações que faltam para calcular o valor dos painéis em reais.");
+    return false;
   } catch (error) {
     addMessage(
       "Não consegui carregar a planilha agora. Se ela não estiver pública como visualização, o Google bloqueia o acesso pelo site."
     );
+    return false;
   }
 }
 
@@ -660,7 +745,8 @@ function addMessage(text, owner = "bot", extraClass = "") {
 function addSummary() {
   const quote = getQuote();
   const prospect = escapeHtml(answers.name || "cliente");
-  const technicalVisit = escapeHtml(`${answers.city || "Local a confirmar"} · ${answers.visitPeriod || "A combinar"}`);
+  const location = [answers.city, answers.zipCode].filter(Boolean).join(" · ") || "Local a confirmar";
+  const technicalVisit = escapeHtml(`${location} · ${answers.visitPeriod || "A combinar"}`);
   const ledDetails = escapeHtml(`${quote.lamp || "Cache"}${quote.cabinet ? ` · ${quote.cabinet}` : ""}`);
   const areaStatus = quote.qualifiedOpportunity ? "Oportunidade qualificada para instalação" : "Oportunidade abaixo de 8 m²";
   const summary = document.createElement("div");
@@ -701,7 +787,7 @@ function addDisqualifiedSummary() {
 }
 
 function nextUnansweredStep() {
-  const index = flow.findIndex((step) => !answers[step.key]);
+  const index = flow.findIndex((step) => !answers[step.key] && !shouldSkipStep(step));
   stepIndex = index === -1 ? flow.length : index;
 }
 
@@ -732,16 +818,11 @@ function askCurrentStep() {
   }
 
   window.setTimeout(() => addMessage(botText(step.question)), 240);
-  chatInput.placeholder = step.placeholder || "Escolha uma opção acima";
-  chatInput.disabled = step.type === "choice";
   renderQuickReplies(step);
-  if (step.type !== "choice") {
-    chatInput.focus();
-  }
 }
 
 function shouldSkipStep(step) {
-  return step.key === "visitPeriod" && getLeadReadiness() && answers.phone && answers.city;
+  return ["city", "visitPeriod"].includes(step.key) && getLeadReadiness();
 }
 
 function handleAnswer(value, displayValue = value) {
@@ -755,11 +836,6 @@ function handleAnswer(value, displayValue = value) {
   addMessage(displayValue, "user");
   stepIndex += 1;
   quickReplies.innerHTML = "";
-  chatInput.value = "";
-  chatInput.disabled = false;
-  if (step.key === "city") {
-    chatForm.remove();
-  }
   askCurrentStep();
 }
 
@@ -788,10 +864,74 @@ function whatsappMessage() {
   ].join(" ");
 }
 
-function showNativeSchedule() {
+function submitScheduleEmail() {
+  const quote = getQuote();
+  const addressLine = [
+    formatAddress(answers.address),
+    answers.addressNumber,
+    answers.addressComplement,
+    answers.addressReference ? `Ref: ${answers.addressReference}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const payload = {
+    _subject: `Nova visita técnica ImporteLED - ${answers.name || "Lead"}`,
+    _template: "table",
+    _captcha: "false",
+    nome: answers.name || "",
+    email: answers.email || "",
+    whatsapp: answers.phone || "",
+    cep: answers.zipCode || "",
+    endereco: addressLine,
+    data_desejada: answers.visitDate || "",
+    periodo: answers.visitPeriod || "",
+    aplicacao: labelFor("application", quote.application),
+    distancia_visualizacao: labelFor("distance", quote.distance),
+    area_m2: quote.area || 0,
+    pixel_pitch: quote.pitch,
+    led: quote.lamp || "",
+    instalacao: labelFor("install", quote.install),
+    valor_produto_nacionalizado: brlCurrency(quote.nationalizedTotal),
+  };
+  const iframeName = `scheduleEmail_${Date.now()}`;
+  const iframe = document.createElement("iframe");
+  iframe.name = iframeName;
+  iframe.hidden = true;
+  document.body.append(iframe);
+
+  const form = document.createElement("form");
+  form.action = SCHEDULE_EMAIL_ENDPOINT;
+  form.method = "POST";
+  form.target = iframeName;
+  form.hidden = true;
+
+  Object.entries(payload).forEach(([name, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = String(value ?? "");
+    form.append(input);
+  });
+
+  document.body.append(form);
+  form.submit();
+  window.setTimeout(() => {
+    form.remove();
+    iframe.remove();
+  }, 5000);
+}
+
+async function showNativeSchedule() {
   quickReplies.innerHTML = "";
-  chatInput.disabled = true;
-  chatInput.placeholder = "Agendamento aberto";
+  addMessage("Estou buscando o endereço pelo CEP para agilizar o agendamento.");
+  await hydrateAddressFromZip();
+
+  const addressText = formatAddress(answers.address);
+  const hasAddress = Boolean(addressText);
+  const zipField = hasAddress
+    ? `<input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" readonly />`
+    : `<input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" required />`;
+  const address = answers.address || {};
 
   const container = document.createElement("div");
   container.className = "message bot schedule-card";
@@ -811,6 +951,45 @@ function showNativeSchedule() {
         <input name="phone" autocomplete="tel" value="${escapeHtml(answers.phone || "")}" required />
       </label>
       <label>
+        <span>CEP</span>
+        ${zipField}
+      </label>
+      <div class="address-preview" data-address-preview>
+        ${
+          hasAddress
+            ? `<span>Endereço encontrado</span><strong>${escapeHtml(addressText)}</strong>`
+            : `<span>Endereço</span><strong>${answers.zipCode ? "Não consegui encontrar esse CEP. Confira os números." : "Informe o CEP para buscar o endereço."}</strong>`
+        }
+      </div>
+      <label>
+        <span>Endereço</span>
+        <input name="street" value="${escapeHtml(address.street || "")}" readonly />
+      </label>
+      <label>
+        <span>Bairro</span>
+        <input name="neighborhood" value="${escapeHtml(address.neighborhood || "")}" readonly />
+      </label>
+      <label>
+        <span>Cidade</span>
+        <input name="addressCity" value="${escapeHtml(address.city || "")}" readonly />
+      </label>
+      <label>
+        <span>UF</span>
+        <input name="addressState" value="${escapeHtml(address.state || "")}" readonly />
+      </label>
+      <label>
+        <span>Número</span>
+        <input name="addressNumber" autocomplete="address-line2" value="${escapeHtml(answers.addressNumber || "")}" required />
+      </label>
+      <label>
+        <span>Complemento</span>
+        <input name="addressComplement" autocomplete="address-line3" value="${escapeHtml(answers.addressComplement || "")}" placeholder="Sala, bloco, referência interna" />
+      </label>
+      <label>
+        <span>Referência para acesso</span>
+        <input name="addressReference" value="${escapeHtml(answers.addressReference || "")}" placeholder="Portaria, doca, estacionamento..." />
+      </label>
+      <label>
         <span>Data desejada</span>
         <input name="date" type="date" required />
       </label>
@@ -823,24 +1002,78 @@ function showNativeSchedule() {
           <option value="A combinar">A combinar</option>
         </select>
       </label>
-      <button class="reply-button whatsapp schedule-button" type="submit">Confirmar solicitação de visita</button>
     </form>
   `;
   chatBody.append(container);
 
-  container.querySelector(".schedule-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const form = container.querySelector(".schedule-form");
+  const zipInput = form.elements.zipCode;
+  const addressPreview = container.querySelector("[data-address-preview]");
+
+  function fillAddressFields(address) {
+    form.elements.street.value = address?.street || "";
+    form.elements.neighborhood.value = address?.neighborhood || "";
+    form.elements.addressCity.value = address?.city || "";
+    form.elements.addressState.value = address?.state || "";
+  }
+
+  zipInput.addEventListener("blur", async () => {
+    addressPreview.innerHTML = `<span>Endereço</span><strong>Buscando endereço pelo CEP...</strong>`;
+    const address = await lookupZipCode(zipInput.value);
+    if (!address) {
+      answers.address = null;
+      fillAddressFields(null);
+      addressPreview.innerHTML = `<span>Endereço</span><strong>Não encontramos esse CEP. Confira os números.</strong>`;
+      return;
+    }
+
+    answers.zipCode = address.zipCode;
+    answers.address = address;
+    if (!answers.city && address.city) {
+      answers.city = `${address.city}, ${address.state}`;
+    }
+    zipInput.value = address.zipCode;
+    fillAddressFields(address);
+    addressPreview.innerHTML = `<span>Endereço encontrado</span><strong>${escapeHtml(formatAddress(address))}</strong>`;
+  });
+
+  async function confirmSchedule() {
+    if (!form.reportValidity()) {
+      return;
+    }
+
+    const formData = new FormData(form);
+    const address = answers.address || (await lookupZipCode(formData.get("zipCode")));
     answers.name = String(formData.get("name") || "").trim();
     answers.email = String(formData.get("email") || "").trim();
     answers.phone = String(formData.get("phone") || "").trim();
+    answers.zipCode = formatZipCode(formData.get("zipCode"));
+    answers.address = address;
+    answers.addressNumber = String(formData.get("addressNumber") || "").trim();
+    answers.addressComplement = String(formData.get("addressComplement") || "").trim();
+    answers.addressReference = String(formData.get("addressReference") || "").trim();
     answers.visitDate = String(formData.get("date") || "").trim();
     answers.visitPeriod = String(formData.get("period") || "").trim();
+    submitScheduleEmail();
     container.remove();
+    quickReplies.innerHTML = "";
     addMessage(
-      `Solicitação recebida, ${answers.name}. Vamos confirmar a visita técnica para ${answers.visitDate} no período ${answers.visitPeriod}.`
+      `Solicitação recebida, ${answers.name}. Vamos confirmar a visita técnica para ${answers.visitDate} no período ${answers.visitPeriod} em ${formatAddress(answers.address)}${answers.addressNumber ? `, ${answers.addressNumber}` : ""}.`
     );
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await confirmSchedule();
   });
+
+  quickReplies.innerHTML = "";
+  const confirmButton = document.createElement("button");
+  confirmButton.type = "button";
+  confirmButton.className = "reply-button whatsapp schedule-button";
+  confirmButton.textContent = "Confirmar solicitação de visita";
+  confirmButton.addEventListener("click", confirmSchedule);
+  quickReplies.append(confirmButton);
 
   chatBody.scrollTop = container.offsetTop - chatBody.offsetTop;
 }
@@ -848,9 +1081,6 @@ function showNativeSchedule() {
 function finishChat() {
   if (!getQuote().qualifiedOpportunity) {
     addDisqualifiedSummary();
-    chatInput.disabled = true;
-    chatInput.placeholder = "Oportunidade abaixo de 8 m²";
-    chatForm.hidden = true;
     quickReplies.innerHTML = "";
 
     const restart = document.createElement("button");
@@ -863,8 +1093,6 @@ function finishChat() {
   }
 
   addSummary();
-  chatInput.disabled = true;
-  chatForm.hidden = true;
   quickReplies.innerHTML = "";
 
   const button = document.createElement("button");
@@ -881,20 +1109,16 @@ async function restartChat() {
   autoScrollMessages = false;
   chatBody.innerHTML = "";
   quickReplies.innerHTML = "";
-  if (!chatForm.isConnected) {
-    chatFooter.append(chatForm);
-  }
-  chatForm.hidden = false;
-  chatInput.value = "";
-  chatInput.disabled = false;
   try {
     await loadPriceCache();
   } catch (error) {
     addMessage("Não consegui carregar o cache de preços local. Rode a página por um servidor a partir da pasta windsurf para liberar o arquivo JSON.");
   }
-  await showInitialHistory();
-  nextUnansweredStep();
-  askCurrentStep();
+  const handled = await showInitialHistory();
+  if (!handled) {
+    nextUnansweredStep();
+    askCurrentStep();
+  }
   chatBody.scrollTop = 0;
   window.scrollTo(0, 0);
   autoScrollMessages = true;
@@ -914,13 +1138,13 @@ async function pollForNewLead() {
       answers = {};
       chatBody.innerHTML = "";
       quickReplies.innerHTML = "";
-      chatInput.value = "";
-      chatInput.disabled = false;
       hydrateAnswersFromLatestRow(latestRow);
-      addMessage("Novo lead detectado na planilha. Já interpretei as colunas N, O, P, Q e S para montar o orçamento.");
-      addMessage(formatLoadedContext(latestRow), "bot");
-      nextUnansweredStep();
-      askCurrentStep();
+      if (getLeadReadiness()) {
+        finishChat();
+      } else {
+        nextUnansweredStep();
+        askCurrentStep();
+      }
     }
   } catch (error) {
     // Mantem a tela atual se a consulta pontual ao Google falhar.
@@ -928,14 +1152,6 @@ async function pollForNewLead() {
     pollingLead = false;
   }
 }
-
-chatForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  if (chatInput.disabled) {
-    return;
-  }
-  handleAnswer(chatInput.value);
-});
 
 window.addEventListener("resize", resizeCanvas);
 window.setInterval(pollForNewLead, LEAD_POLL_INTERVAL_MS);

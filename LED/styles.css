@@ -413,44 +413,34 @@ h1 {
   color: #fff;
 }
 
+.schedule-form input[readonly] {
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.address-preview {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(49, 193, 214, 0.28);
+  border-radius: 8px;
+  background: rgba(49, 193, 214, 0.08);
+}
+
+.address-preview span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.address-preview strong {
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
 .schedule-form button {
   grid-column: 1 / -1;
-}
-
-.chat-input {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 46px;
-  gap: 10px;
-}
-
-.chat-input input {
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
-  padding: 0 14px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-}
-
-.chat-input input::placeholder {
-  color: rgba(255, 255, 255, 0.46);
-}
-
-.chat-input input:focus {
-  outline: 3px solid rgba(49, 193, 214, 0.2);
-  border-color: var(--cyan);
-}
-
-.send-button {
-  width: 46px;
-  height: 46px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--green);
-  color: #fff;
-  font-size: 24px;
-  font-weight: 850;
 }
 
 .sr-only {
