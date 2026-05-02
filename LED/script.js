@@ -4,8 +4,8 @@ const chatBody = document.querySelector("#chat-body");
 const chatFooter = document.querySelector(".chat-footer");
 const quickReplies = document.querySelector("#quick-replies");
 
-const SHEET_ID = "1mHNTXO5nT57HZED-LdrfcfaWE1i0heuDNB4qofOMMxk";
-const SHEET_GID = new URLSearchParams(window.location.search).get("gid") || "0";
+const SHEET_ID = "1NYC0ev0sGerOniMIGq-UUegT08rPj2J57_BaRUWoFCY";
+const SHEET_GID = "0";
 const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}`;
 const PRICE_CACHE_URL = "data/prices_cache.json";
 const ZIP_LOOKUP_URL = "https://viacep.com.br/ws";
@@ -985,10 +985,6 @@ async function showNativeSchedule() {
   addMessage("Estou buscando o endereço pelo CEP para agilizar o agendamento.");
   await hydrateAddressFromZip();
 
-  const hasAddress = Boolean(formatAddress(answers.address));
-  const zipField = hasAddress
-    ? `<input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" readonly />`
-    : `<input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" required />`;
   const address = answers.address || {};
 
   const container = document.createElement("div");
@@ -1009,8 +1005,8 @@ async function showNativeSchedule() {
         <input name="phone" autocomplete="tel" value="${escapeHtml(answers.phone || "")}" required />
       </label>
       <label>
-        <span>CEP</span>
-        ${zipField}
+        <span>CEP de instalação</span>
+        <input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" required />
       </label>
       <label>
         <span>Endereço</span>
