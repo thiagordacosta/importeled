@@ -1098,7 +1098,7 @@ function finishChat() {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "reply-button whatsapp schedule-button";
-  button.textContent = "Agendar visita técnica da instalação";
+  button.textContent = "Agendar visita técnica";
   button.addEventListener("click", showNativeSchedule);
   quickReplies.append(button);
 }
