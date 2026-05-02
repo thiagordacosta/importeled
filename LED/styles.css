@@ -418,27 +418,6 @@ h1 {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.address-preview {
-  grid-column: 1 / -1;
-  display: grid;
-  gap: 4px;
-  padding: 10px 12px;
-  border: 1px solid rgba(49, 193, 214, 0.28);
-  border-radius: 8px;
-  background: rgba(49, 193, 214, 0.08);
-}
-
-.address-preview span {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.address-preview strong {
-  color: #fff;
-  font-size: 14px;
-  line-height: 1.35;
-}
-
 .schedule-form button {
   grid-column: 1 / -1;
 }

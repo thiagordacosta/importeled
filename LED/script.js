@@ -926,8 +926,7 @@ async function showNativeSchedule() {
   addMessage("Estou buscando o endereço pelo CEP para agilizar o agendamento.");
   await hydrateAddressFromZip();
 
-  const addressText = formatAddress(answers.address);
-  const hasAddress = Boolean(addressText);
+  const hasAddress = Boolean(formatAddress(answers.address));
   const zipField = hasAddress
     ? `<input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" readonly />`
     : `<input name="zipCode" autocomplete="postal-code" value="${escapeHtml(answers.zipCode || "")}" required />`;
@@ -954,13 +953,6 @@ async function showNativeSchedule() {
         <span>CEP</span>
         ${zipField}
       </label>
-      <div class="address-preview" data-address-preview>
-        ${
-          hasAddress
-            ? `<span>Endereço encontrado</span><strong>${escapeHtml(addressText)}</strong>`
-            : `<span>Endereço</span><strong>${answers.zipCode ? "Não consegui encontrar esse CEP. Confira os números." : "Informe o CEP para buscar o endereço."}</strong>`
-        }
-      </div>
       <label>
         <span>Endereço</span>
         <input name="street" value="${escapeHtml(address.street || "")}" readonly />
@@ -1008,7 +1000,6 @@ async function showNativeSchedule() {
 
   const form = container.querySelector(".schedule-form");
   const zipInput = form.elements.zipCode;
-  const addressPreview = container.querySelector("[data-address-preview]");
 
   function fillAddressFields(address) {
     form.elements.street.value = address?.street || "";
@@ -1018,12 +1009,10 @@ async function showNativeSchedule() {
   }
 
   zipInput.addEventListener("blur", async () => {
-    addressPreview.innerHTML = `<span>Endereço</span><strong>Buscando endereço pelo CEP...</strong>`;
     const address = await lookupZipCode(zipInput.value);
     if (!address) {
       answers.address = null;
       fillAddressFields(null);
-      addressPreview.innerHTML = `<span>Endereço</span><strong>Não encontramos esse CEP. Confira os números.</strong>`;
       return;
     }
 
@@ -1034,7 +1023,6 @@ async function showNativeSchedule() {
     }
     zipInput.value = address.zipCode;
     fillAddressFields(address);
-    addressPreview.innerHTML = `<span>Endereço encontrado</span><strong>${escapeHtml(formatAddress(address))}</strong>`;
   });
 
   async function confirmSchedule() {
