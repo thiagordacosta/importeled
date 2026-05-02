@@ -38,13 +38,40 @@
       body {
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: var(--ink);
-        background: var(--bg);
+        background: #f8fbff;
         line-height: 1.55;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
 
       a { color: inherit; text-decoration: none; }
+
+      #led-canvas,
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #led-canvas {
+        z-index: 0;
+      }
+
+      .backdrop {
+        z-index: 1;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(248, 251, 255, 0.96), rgba(248, 251, 255, 0.78) 48%, rgba(248, 251, 255, 0.42)),
+          linear-gradient(0deg, rgba(248, 251, 255, 0.94), rgba(248, 251, 255, 0.26) 56%, rgba(248, 251, 255, 0.76));
+      }
+
+      .site-header,
+      main,
+      .site-footer {
+        position: relative;
+        z-index: 2;
+      }
 
       .container {
         max-width: var(--maxw);
@@ -380,9 +407,12 @@
     </style>
   </head>
   <body>
+    <canvas id="led-canvas" aria-hidden="true"></canvas>
+    <div class="backdrop" aria-hidden="true"></div>
+
     <header class="site-header">
       <div class="container">
-        <a class="brand" href="#top" aria-label="ImporteLED">
+        <a class="brand" href="#" aria-label="ImporteLED">
           <span class="brand-mark" aria-hidden="true"></span>
           <span>ImporteLED</span>
         </a>
@@ -392,7 +422,7 @@
           <a href="#caso">Caso de sucesso</a>
           <a href="#pagamento">Pagamento</a>
         </nav>
-        <a class="nav-cta" href="LED/">Falar com consultor</a>
+        <a class="nav-cta" href="http://wa.me/5551980295513">Falar com consultor</a>
       </div>
     </header>
 
@@ -406,13 +436,12 @@
           </div>
           <div>
             <p class="eyebrow">Nosso Modelo</p>
-            <h1>Painéis de LED importados, com preço já nacionalizado.</h1>
+            <h1>Temos uma fábrica parceira, validada, de quem importamos.</h1>
             <p class="lead">
-              Atendemos fornecedores e integradores com custo transparente, entrega previsível e suporte técnico
-              para instalação no Brasil.
+              Fazemos a importação no seu CNPJ e cobramos pela consultoria.
             </p>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <a class="btn btn-primary" href="LED/">Começar orçamento</a>
+              <a class="btn btn-primary" href="#">Começar orçamento</a>
               <a class="btn btn-ghost" href="#requisitos">Ver pré-requisitos</a>
             </div>
           </div>
@@ -424,28 +453,39 @@
         <div class="container">
           <div class="section-head">
             <h2>Pré-requisitos</h2>
-            <p>O que sua operação precisa ter para avançar com a importação e a instalação.</p>
           </div>
           <div class="requirements">
             <article class="req-card">
               <div class="req-num">01</div>
-              <h3>Importador ativo</h3>
-              <p>CNPJ habilitado no Radar Siscomex para realizar operações de importação.</p>
+              <h3>Empresa Ativa</h3>
+              <p>
+                Para iniciar um processo de importação formal no Brasil, é indispensável que a empresa esteja ativa
+                e devidamente regularizada.
+              </p>
             </article>
             <article class="req-card">
               <div class="req-num">02</div>
-              <h3>Certificado Digital e-CNPJ</h3>
-              <p>Certificado válido para assinatura dos documentos e acesso aos portais aduaneiros.</p>
+              <h3>Certificado Digital E-CNPJ</h3>
+              <p>
+                Para habilitar o Domicílio Tributário Eletrônico (DTE) no portal e-CAC da Receita Federal, é
+                necessário que a empresa possua um certificado digital do tipo e-CNPJ.
+              </p>
             </article>
             <article class="req-card">
               <div class="req-num">03</div>
-              <h3>Certificado Digital e-CPF</h3>
-              <p>Certificado do representante legal para autenticações e procurações eletrônicas.</p>
+              <h3>Certificado Digital E-CPF</h3>
+              <p>
+                Para solicitar a habilitação no RADAR Siscomex é essencial que o responsável legal da empresa
+                possua um certificado digital do tipo e-CPF.
+              </p>
             </article>
             <article class="req-card">
               <div class="req-num">04</div>
-              <h3>Doc. Consular Atualizada</h3>
-              <p>Documentação consular em dia para emissão e liberação da mercadoria no destino.</p>
+              <h3>Doc. Contábil Atualizada</h3>
+              <p>
+                Para realizar o cadastro em corretoras de câmbio no Brasil e habilitar operações de câmbio, é
+                fundamental que a empresa apresente documentação contábil atualizada e devidamente assinada.
+              </p>
             </article>
           </div>
         </div>
@@ -471,7 +511,7 @@
               90 dias, com custo abaixo da média praticada no mercado e acompanhamento técnico de ponta a ponta.
             </p>
             <div>
-              <a class="btn btn-primary" href="LED/">Ler caso</a>
+              <a class="btn btn-primary" href="#">Ler caso</a>
             </div>
           </div>
           <div class="case-visual" aria-hidden="true">
@@ -517,7 +557,7 @@
                 Estruturamos a operação para que o painel seja fornecido com isenção de ICMS-ST,
                 reduzindo o custo final e mantendo a conformidade fiscal em todas as etapas da importação.
               </p>
-              <a class="btn btn-primary" href="LED/">Simular</a>
+              <a class="btn btn-primary" href="#">Simular</a>
             </div>
             <div class="icms-visual" aria-hidden="true"></div>
           </div>
@@ -528,8 +568,63 @@
     <footer class="site-footer">
       <div class="container footer-inner">
         <span>© ImporteLED · Painéis de LED nacionalizados</span>
-        <span><a href="LED/">Falar com um consultor</a></span>
+        <span><a href="#">Falar com um consultor</a></span>
       </div>
     </footer>
+    <script>
+      const canvas = document.querySelector("#led-canvas");
+      const ctx = canvas.getContext("2d");
+      let width = 0;
+      let height = 0;
+      let pixelRatio = 1;
+      let time = 0;
+
+      function resizeCanvas() {
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        width = canvas.clientWidth;
+        height = canvas.clientHeight;
+        canvas.width = Math.floor(width * pixelRatio);
+        canvas.height = Math.floor(height * pixelRatio);
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      }
+
+      function drawLedWall() {
+        time += 0.012;
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = "#f8fbff";
+        ctx.fillRect(0, 0, width, height);
+
+        const gap = width < 640 ? 18 : 23;
+        const dot = width < 640 ? 2.6 : 3.4;
+        const startX = width < 980 ? width * 0.08 : width * 0.36;
+        const colors = [
+          [31, 107, 255],
+          [49, 193, 214],
+          [255, 106, 19],
+          [25, 179, 106],
+        ];
+
+        for (let y = -gap; y < height + gap; y += gap) {
+          for (let x = startX; x < width + gap; x += gap) {
+            const wave = Math.sin(x * 0.011 + time * 3) + Math.cos(y * 0.018 - time * 2.1);
+            const glow = Math.max(0.18, Math.min(0.86, 0.34 + wave * 0.2 + (x / width) * 0.24));
+            const color = colors[Math.abs(Math.floor((x + y) / gap)) % colors.length];
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${glow})`;
+            ctx.shadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${glow * 0.42})`;
+            ctx.shadowBlur = 4 * glow;
+            ctx.arc(x, y, dot + glow * 0.36, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.shadowBlur = 0;
+        requestAnimationFrame(drawLedWall);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+      drawLedWall();
+    </script>
   </body>
 </html>
