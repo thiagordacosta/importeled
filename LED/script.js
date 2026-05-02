@@ -720,7 +720,8 @@ function askLeadConfirmation() {
   pendingLeadConfirmation = true;
   quickReplies.innerHTML = "";
   const lastName = getLeadLastName(answers.name);
-  addMessage("Para confirmar sua identidade, selecione o seu sobrenome.");
+  const firstName = getLeadFirstName(answers.name);
+  addMessage(`Oi ${firstName}! Para confirmar sua identidade, selecione o seu sobrenome.`);
 
   getLastNameOptions(lastName).forEach((option) => {
     const button = document.createElement("button");
@@ -730,6 +731,15 @@ function askLeadConfirmation() {
     button.addEventListener("click", () => confirmLeadIdentity(option === lastName, option));
     quickReplies.append(button);
   });
+}
+
+function getLeadFirstName(name) {
+  return (
+    String(name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)[0] || "tudo bem"
+  );
 }
 
 function getLeadLastName(name) {
