@@ -374,26 +374,47 @@ h1 {
   min-height: 48px !important;
 }
 
-.calendly-card {
+.schedule-card {
   max-width: 100%;
   width: 100%;
   display: grid;
   gap: 12px;
 }
 
-.calendly-card strong {
+.schedule-card strong {
   color: #fff;
   font-size: 18px;
 }
 
-.calendly-inline-widget {
+.schedule-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.schedule-form label {
+  display: grid;
+  gap: 5px;
+}
+
+.schedule-form span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.schedule-form input,
+.schedule-form select {
   width: 100%;
-  min-width: 320px;
-  height: 660px;
-  overflow: hidden;
-  border: 1px solid var(--line);
+  min-height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
-  background: #fff;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.schedule-form button {
+  grid-column: 1 / -1;
 }
 
 .chat-input {
@@ -504,6 +525,10 @@ h1 {
   }
 
   .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-form {
     grid-template-columns: 1fr;
   }
 }

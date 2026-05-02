@@ -10,7 +10,6 @@ const SHEET_ID = "1mHNTXO5nT57HZED-LdrfcfaWE1i0heuDNB4qofOMMxk";
 const SHEET_GID = new URLSearchParams(window.location.search).get("gid") || "0";
 const SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}`;
 const PRICE_CACHE_URL = "data/prices_cache.json";
-const CALENDLY_URL = "https://calendly.com/thiago-caring/30min";
 const LEAD_POLL_INTERVAL_MS = 30000;
 
 const PRICE_TARGETS = {
@@ -350,6 +349,7 @@ function hydrateAnswersFromLatestRow(row) {
   const agent = readAgentColumns(row);
   const fieldMap = {
     name: ["full name", "nome", "name"],
+    email: ["email", "e-mail", "mail", "endereco_de_email", "endereço_de_email"],
     phone: ["phone", "telefone", "whatsapp", "phone_number"],
     city: ["cidade", "city", "local", "localização", "endereco", "endereço"],
   };
@@ -788,23 +788,59 @@ function whatsappMessage() {
   ].join(" ");
 }
 
-function showCalendlyEmbed() {
+function showNativeSchedule() {
   quickReplies.innerHTML = "";
   chatInput.disabled = true;
   chatInput.placeholder = "Agendamento aberto";
 
   const container = document.createElement("div");
-  container.className = "message bot calendly-card";
+  container.className = "message bot schedule-card";
   container.innerHTML = `
-    <strong>Escolha o melhor horário para a visita técnica.</strong>
-    <div class="calendly-inline-widget" data-url="${CALENDLY_URL}" title="Calendly - visita técnica"></div>
+    <strong>Agendar visita técnica</strong>
+    <form class="schedule-form">
+      <label>
+        <span>Nome</span>
+        <input name="name" autocomplete="name" value="${escapeHtml(answers.name || "")}" required />
+      </label>
+      <label>
+        <span>E-mail</span>
+        <input name="email" type="email" autocomplete="email" value="${escapeHtml(answers.email || "")}" required />
+      </label>
+      <label>
+        <span>WhatsApp</span>
+        <input name="phone" autocomplete="tel" value="${escapeHtml(answers.phone || "")}" required />
+      </label>
+      <label>
+        <span>Data desejada</span>
+        <input name="date" type="date" required />
+      </label>
+      <label>
+        <span>Período</span>
+        <select name="period" required>
+          <option value="">Selecione</option>
+          <option value="Manhã">Manhã</option>
+          <option value="Tarde">Tarde</option>
+          <option value="A combinar">A combinar</option>
+        </select>
+      </label>
+      <button class="reply-button whatsapp schedule-button" type="submit">Confirmar solicitação de visita</button>
+    </form>
   `;
   chatBody.append(container);
 
-  const widget = container.querySelector(".calendly-inline-widget");
-  if (window.Calendly?.initInlineWidget) {
-    window.Calendly.initInlineWidget({ url: CALENDLY_URL, parentElement: widget });
-  }
+  container.querySelector(".schedule-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    answers.name = String(formData.get("name") || "").trim();
+    answers.email = String(formData.get("email") || "").trim();
+    answers.phone = String(formData.get("phone") || "").trim();
+    answers.visitDate = String(formData.get("date") || "").trim();
+    answers.visitPeriod = String(formData.get("period") || "").trim();
+    container.remove();
+    addMessage(
+      `Solicitação recebida, ${answers.name}. Vamos confirmar a visita técnica para ${answers.visitDate} no período ${answers.visitPeriod}.`
+    );
+  });
 
   chatBody.scrollTop = container.offsetTop - chatBody.offsetTop;
 }
@@ -835,7 +871,7 @@ function finishChat() {
   button.type = "button";
   button.className = "reply-button whatsapp schedule-button";
   button.textContent = "Agendar visita técnica da instalação";
-  button.addEventListener("click", showCalendlyEmbed);
+  button.addEventListener("click", showNativeSchedule);
   quickReplies.append(button);
 }
 
