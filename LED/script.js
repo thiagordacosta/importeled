@@ -102,6 +102,7 @@ let pricesLoaded = false;
 let latestLeadSignature = "";
 let pollingLead = false;
 let autoScrollMessages = false;
+let pendingLeadConfirmation = false;
 
 function resizeCanvas() {
   pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -701,13 +702,7 @@ async function showInitialHistory() {
     latestLeadSignature = rowSignature(latestRow);
 
     if (getLeadReadiness()) {
-      const quote = getQuote();
-      if (!quote.qualifiedOpportunity) {
-        addDisqualifiedSummary();
-        return true;
-      }
-
-      finishChat();
+      askLeadConfirmation();
       return true;
     }
 
@@ -719,6 +714,60 @@ async function showInitialHistory() {
     );
     return false;
   }
+}
+
+function askLeadConfirmation() {
+  pendingLeadConfirmation = true;
+  quickReplies.innerHTML = "";
+  const lastName = getLeadLastName(answers.name);
+  addMessage("Para confirmar sua identidade, selecione o seu sobrenome.");
+
+  getLastNameOptions(lastName).forEach((option) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "reply-button";
+    button.textContent = option;
+    button.addEventListener("click", () => confirmLeadIdentity(option === lastName, option));
+    quickReplies.append(button);
+  });
+}
+
+function getLeadLastName(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  return parts.length > 1 ? parts.at(-1) : parts[0] || "Cliente";
+}
+
+function getLastNameOptions(lastName) {
+  const decoys = ["Silva", "Santos", "Oliveira", "Souza", "Costa", "Pereira", "Almeida", "Ferreira", "Rodrigues", "Lima"];
+  const options = [lastName];
+  decoys.forEach((item) => {
+    if (normalizeKey(item) !== normalizeKey(lastName) && options.length < 4) {
+      options.push(item);
+    }
+  });
+
+  const seed = normalizeKey(answers.name || lastName).length % options.length;
+  return [...options.slice(seed), ...options.slice(0, seed)];
+}
+
+function confirmLeadIdentity(isConfirmed, selectedLastName) {
+  pendingLeadConfirmation = false;
+  quickReplies.innerHTML = "";
+  addMessage(selectedLastName, "user");
+
+  if (isConfirmed) {
+    if (!getQuote().qualifiedOpportunity) {
+      addDisqualifiedSummary();
+      return;
+    }
+    finishChat();
+    return;
+  }
+
+  addMessage("Não consegui confirmar sua identidade com essa opção. Por segurança, não vou mostrar este orçamento.");
 }
 
 function labelFor(key, value) {
@@ -1128,7 +1177,7 @@ async function pollForNewLead() {
       quickReplies.innerHTML = "";
       hydrateAnswersFromLatestRow(latestRow);
       if (getLeadReadiness()) {
-        finishChat();
+        askLeadConfirmation();
       } else {
         nextUnansweredStep();
         askCurrentStep();
