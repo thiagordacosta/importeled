@@ -117,29 +117,29 @@ function resizeCanvas() {
 function drawLedWall() {
   time += 0.012;
   ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = "#070b12";
+  ctx.fillStyle = "#f8fbff";
   ctx.fillRect(0, 0, width, height);
 
   const gap = width < 640 ? 18 : 23;
-  const dot = width < 640 ? 2.1 : 2.8;
-  const startX = width < 980 ? width * 0.1 : width * 0.38;
+  const dot = width < 640 ? 2.6 : 3.4;
+  const startX = width < 980 ? width * 0.08 : width * 0.36;
   const colors = [
-    [25, 179, 106],
+    [31, 107, 255],
     [49, 193, 214],
-    [244, 185, 66],
-    [223, 75, 63],
+    [255, 106, 19],
+    [25, 179, 106],
   ];
 
   for (let y = -gap; y < height + gap; y += gap) {
     for (let x = startX; x < width + gap; x += gap) {
       const wave = Math.sin(x * 0.011 + time * 3) + Math.cos(y * 0.018 - time * 2.1);
-      const glow = Math.max(0.1, Math.min(1, 0.32 + wave * 0.24 + (x / width) * 0.28));
+      const glow = Math.max(0.18, Math.min(0.86, 0.34 + wave * 0.2 + (x / width) * 0.24));
       const color = colors[Math.abs(Math.floor((x + y) / gap)) % colors.length];
       ctx.beginPath();
       ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${glow})`;
-      ctx.shadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${glow})`;
-      ctx.shadowBlur = 11 * glow;
-      ctx.arc(x, y, dot + glow * 1.2, 0, Math.PI * 2);
+      ctx.shadowColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${glow * 0.42})`;
+      ctx.shadowBlur = 4 * glow;
+      ctx.arc(x, y, dot + glow * 0.36, 0, Math.PI * 2);
       ctx.fill();
     }
   }
