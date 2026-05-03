@@ -67,7 +67,8 @@ const flow = [
   },
   {
     key: "phone",
-    question: "Para um agente continuar a conversa sobre instalação e visita técnica, qual WhatsApp devemos usar?",
+    question:
+      "Para um consultor humano continuar sobre instalação e visita técnica, qual WhatsApp devemos usar? Ao informar o número, você autoriza a ImporteLED a responder sobre este orçamento. Para interromper contatos, responda PARAR.",
     placeholder: "(11) 99999-9999",
     type: "text",
   },
@@ -911,7 +912,8 @@ function whatsappMessage() {
   const quote = getQuote();
   return [
     `Olá, aqui é ${answers.name}.`,
-    "Vim do anúncio para acessar o preço nacionalizado do painel e conversar sobre instalação.",
+    "Autorizo a ImporteLED a me atender pelo WhatsApp sobre este orçamento de painel de LED e consultoria de importação.",
+    "Se eu pedir PARAR, não quero receber novos contatos.",
     `Quero cotar um painel ${labelFor("application", quote.application)} ${quote.pitch}.`,
     `Área aproximada: ${quote.area} m².`,
     `Preço base do cache: ${currency(quote.usdPerM2)} por m², ${quote.lamp || "sem marca informada"}.`,
@@ -952,6 +954,8 @@ function submitScheduleEmail() {
     led: quote.lamp || "",
     instalacao: labelFor("install", quote.install),
     valor_produto_nacionalizado: brlCurrency(quote.nationalizedTotal),
+    consentimento_whatsapp:
+      "Autorizou contato pelo WhatsApp sobre orçamento, visita técnica e assuntos diretamente relacionados. Opt-out: PARAR.",
   };
   const iframeName = `scheduleEmail_${Date.now()}`;
   const iframe = document.createElement("iframe");
@@ -1050,6 +1054,14 @@ async function showNativeSchedule() {
           <option value="A combinar">A combinar</option>
         </select>
       </label>
+      <label class="consent-field">
+        <input name="whatsappConsent" type="checkbox" required />
+        <span>
+          Autorizo a ImporteLED a entrar em contato pelo WhatsApp sobre este orçamento, visita técnica e assuntos
+          diretamente relacionados. Posso interromper contatos respondendo PARAR. Li a
+          <a href="../politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.
+        </span>
+      </label>
     </form>
   `;
   chatBody.append(container);
@@ -1104,6 +1116,7 @@ async function showNativeSchedule() {
     addMessage(
       `Solicitação recebida, ${answers.name}. Vamos confirmar a visita técnica para ${answers.visitDate} no período ${answers.visitPeriod} em ${formatAddress(answers.address)}${answers.addressNumber ? `, ${answers.addressNumber}` : ""}.`
     );
+    addMessage("Um consultor humano dará continuidade. Para interromper contatos pelo WhatsApp, responda PARAR a qualquer momento.");
   }
 
   form.addEventListener("submit", async (event) => {

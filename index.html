@@ -6,7 +6,7 @@
     <title>ImporteLED | Painéis de LED nacionalizados</title>
     <meta
       name="description"
-      content="Painéis de LED importados com preço nacionalizado, entrega em 90 dias, isenção de ICMS-ST e pagamento em três parcelas."
+      content="Painéis de LED importados com preço nacionalizado, consultoria de importação e atendimento por WhatsApp mediante autorização."
     />
     <!-- Hotjar Tracking Code for ImporteLED -->
     <script>
@@ -184,7 +184,7 @@
         margin: 0 0 14px;
       }
       h1 {
-        font-size: clamp(36px, 5vw, 56px);
+        font-size: 50px;
         line-height: 1.05;
         letter-spacing: -0.025em;
         margin: 0 0 20px;
@@ -220,6 +220,19 @@
         border-color: var(--line);
       }
       .btn-ghost:hover { border-color: var(--ink); }
+      .consent-note {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+        max-width: 520px;
+        margin: 12px 0 0;
+      }
+      .consent-note a,
+      .legal-links a {
+        color: var(--ink);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
 
       @media (max-width: 860px) {
         .hero { padding: 56px 0 40px; }
@@ -322,15 +335,14 @@
         background: var(--orange);
         border-radius: var(--radius);
         min-height: 340px;
-        display: grid;
-        place-items: center;
-        color: #fff;
+        overflow: hidden;
       }
-      .case-logo {
-        font-size: 64px;
-        font-weight: 800;
-        letter-spacing: -0.04em;
-        opacity: 0.95;
+      .case-visual img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 340px;
+        object-fit: cover;
       }
       @media (max-width: 860px) { .case-grid { grid-template-columns: 1fr; } }
 
@@ -414,6 +426,11 @@
         gap: 16px;
         flex-wrap: wrap;
       }
+      .legal-links {
+        display: inline-flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
       .footer-inner a:hover { color: var(--ink); }
     </style>
   </head>
@@ -423,7 +440,7 @@
 
     <header class="site-header">
       <div class="container">
-        <a class="brand" href="# " aria-label="ImporteLED">
+        <a class="brand" href="index.html" aria-label="ImporteLED">
           <span class="brand-mark" aria-hidden="true"></span>
           <span>ImporteLED</span>
         </a>
@@ -433,7 +450,11 @@
           <a href="#caso">Caso de sucesso</a>
           <a href="#pagamento">Pagamento</a>
         </nav>
-        <a class="nav-cta" href="http://wa.me/5551980295513">Falar com consultor</a>
+        <a
+          class="nav-cta"
+          href="https://wa.me/5551980295513?text=Ol%C3%A1%2C%20autorizo%20a%20ImporteLED%20a%20me%20atender%20pelo%20WhatsApp%20sobre%20pain%C3%A9is%20de%20LED%20e%20consultoria%20de%20importa%C3%A7%C3%A3o.%20Se%20eu%20pedir%20PARAR%2C%20n%C3%A3o%20quero%20receber%20novos%20contatos."
+          rel="noopener"
+        >Falar com consultor</a>
       </div>
     </header>
 
@@ -452,9 +473,14 @@
               Fazemos a importação no seu CNPJ e cobramos pela consultoria.
             </p>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <a class="btn btn-primary" href="#">Começar orçamento</a>
+              <a class="btn btn-primary" href="LED/">Começar orçamento</a>
               <a class="btn btn-ghost" href="#requisitos">Ver pré-requisitos</a>
             </div>
+            <p class="consent-note">
+              Ao iniciar uma conversa pelo WhatsApp, você autoriza a ImporteLED a responder sobre este orçamento,
+              visita técnica e conteúdos diretamente relacionados. Para interromper contatos, responda PARAR.
+              Consulte a <a href="politica-privacidade.html">Política de Privacidade</a>.
+            </p>
           </div>
         </div>
       </section>
@@ -524,11 +550,11 @@
               grandes marcas com experiências visuais de alto impacto.
             </p>
             <div>
-              <a class="btn btn-primary" href="#">Ler caso</a>
+              <a class="btn btn-primary" href="#caso">Ler caso</a>
             </div>
           </div>
-          <div class="case-visual" aria-hidden="true">
-            <div class="case-logo">Fullpromo</div>
+          <div class="case-visual">
+            <img src="assets/fullpromo-case.png" alt="Logotipo da Fullpromo em fundo laranja" />
           </div>
         </div>
       </section>
@@ -571,7 +597,7 @@
                 e não à revenda, a operação não está sujeita à incidência do ICMS-ST
                 (Substituição Tributária), reduzindo significativamente o custo final da importação.
               </p>
-              <a class="btn btn-primary" href="#">Simular</a>
+              <a class="btn btn-primary" href="LED/">Simular</a>
             </div>
             <div class="icms-visual" aria-hidden="true"></div>
           </div>
@@ -582,7 +608,14 @@
     <footer class="site-footer">
       <div class="container footer-inner">
         <span>© ImporteLED · Painéis de LED nacionalizados</span>
-        <span><a href="#">Falar com um consultor</a></span>
+        <span class="legal-links">
+          <a href="politica-privacidade.html">Política de Privacidade</a>
+          <a href="mailto:thiago@caring.com.br">Suporte por e-mail</a>
+          <a
+            href="https://wa.me/5551980295513?text=Ol%C3%A1%2C%20autorizo%20a%20ImporteLED%20a%20me%20atender%20pelo%20WhatsApp%20sobre%20pain%C3%A9is%20de%20LED%20e%20consultoria%20de%20importa%C3%A7%C3%A3o.%20Se%20eu%20pedir%20PARAR%2C%20n%C3%A3o%20quero%20receber%20novos%20contatos."
+            rel="noopener"
+          >Falar com um consultor</a>
+        </span>
       </div>
     </footer>
     <script>
