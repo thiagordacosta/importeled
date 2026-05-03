@@ -46,6 +46,10 @@
 
       html, body { margin: 0; padding: 0; }
 
+      html {
+        scroll-padding-top: 88px;
+      }
+
       body {
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: var(--ink);
@@ -231,7 +235,10 @@
       }
 
       /* Section */
-      section.block { padding: 88px 0; }
+      section.block {
+        padding: 88px 0;
+        scroll-margin-top: 88px;
+      }
       .section-head {
         text-align: center;
         max-width: 640px;
