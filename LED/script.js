@@ -612,9 +612,10 @@ function selectPriceItem(application, distance, install) {
 
 function parseArea(value) {
   const text = String(value).toLowerCase().replace(",", ".").trim();
-  const dimensions = text.match(/(\d+(?:\.\d+)?)\s*(x|por)\s*(\d+(?:\.\d+)?)/);
+  const unit = "(?:m|mt|mts|metro|metros)?";
+  const dimensions = text.match(new RegExp(`(\\d+(?:\\.\\d+)?)\\s*${unit}\\s*(?:x|×|\\*|por)\\s*(\\d+(?:\\.\\d+)?)\\s*${unit}`));
   if (dimensions) {
-    return Number(dimensions[1]) * Number(dimensions[3]);
+    return Number(dimensions[1]) * Number(dimensions[2]);
   }
   const number = text.match(/\d+(?:\.\d+)?/);
   return number ? Number(number[0]) : 0;
