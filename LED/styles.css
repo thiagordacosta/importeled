@@ -244,6 +244,25 @@ h1 {
   line-height: 1.45;
 }
 
+.consultant-cta {
+  align-self: center;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 0 28px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 18px 42px rgba(31, 107, 255, 0.24);
+}
+
+.consultant-cta:hover {
+  transform: translateY(-1px);
+}
+
 .chat-panel {
   height: min(740px, calc(100vh - 142px));
   min-height: 600px;

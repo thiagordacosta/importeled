@@ -1211,8 +1211,11 @@ async function pollForNewLead() {
 }
 
 window.addEventListener("resize", resizeCanvas);
-window.setInterval(pollForNewLead, LEAD_POLL_INTERVAL_MS);
 
 resizeCanvas();
 drawLedWall();
-restartChat();
+
+if (chatBody && chatFooter && quickReplies) {
+  window.setInterval(pollForNewLead, LEAD_POLL_INTERVAL_MS);
+  restartChat();
+}
