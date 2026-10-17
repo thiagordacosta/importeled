@@ -484,6 +484,68 @@
         .icms { grid-template-columns: 1fr; padding: 32px; }
       }
 
+      /* Lista de preços */
+      .price-list-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 56px;
+        align-items: center;
+      }
+      .price-list-copy h2 {
+        margin: 0 0 16px;
+        font-size: clamp(30px, 3.6vw, 42px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+      }
+      .price-list-copy > p:not(.eyebrow) { color: var(--ink-soft); }
+      .price-list-form {
+        padding: 32px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+      .price-list-fields { display: grid; gap: 18px; }
+      .price-list-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .price-list-field input {
+        display: block;
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        border: 1px solid #cbd2df;
+        border-radius: var(--radius-sm);
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        font-size: 16px;
+      }
+      .price-list-field input:focus-visible,
+      .price-list-form .btn:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      .price-list-form .btn { margin-top: 24px; width: 100%; justify-content: center; }
+      .price-list-form .btn:disabled { cursor: not-allowed; opacity: .6; transform: none; box-shadow: none; }
+      .price-list-form .consent-note { color: var(--ink-soft); }
+      .price-list-status { margin: 16px 0 0; font-size: 14px; color: var(--ink-soft); }
+      .price-list-status:empty { display: none; }
+      .price-list-retry { display: inline-block; margin-top: 12px; color: var(--accent); text-decoration: underline; }
+      .price-list-retry[hidden] { display: none; }
+      @media (max-width: 1120px) {
+        .site-header .nav { gap: 14px; font-size: 13px; }
+      }
+      @media (max-width: 860px) {
+        .price-list-grid { grid-template-columns: 1fr; gap: 28px; }
+      }
+      @media (max-width: 520px) {
+        .price-list-form { padding: 24px; }
+      }
+
       /* Footer */
       footer.site-footer {
         border-top: 1px solid var(--line);
@@ -522,6 +584,7 @@
           <a href="#caso">Caso de sucesso</a>
           <a href="#featuring">Featuring</a>
           <a href="#pagamento">Pagamento</a>
+          <a href="#lista-de-precos">Lista de preços</a>
         </nav>
         <a
           class="nav-cta"
@@ -743,6 +806,43 @@
           </div>
         </div>
       </section>
+      <!-- Lista de preços: envio dos dados e download do PDF. -->
+      <section class="block" id="lista-de-precos" aria-labelledby="price-list-title">
+        <div class="container price-list-grid">
+          <div class="price-list-copy">
+            <p class="eyebrow">Lista de preços</p>
+            <h2 id="price-list-title">Seu próximo projeto começa com os preços na mão.</h2>
+            <p>Preencha seus dados para baixar a lista de preços dos painéis de LED e começar a planejar seu projeto.</p>
+            <p>Precisa de ajuda para escolher? Nosso time pode orientar você sobre a solução para sua instalação.</p>
+          </div>
+          <form class="price-list-form" id="price-list-form" action="https://formsubmit.co/thiago@caring.com.br" method="post"
+            data-price-list-url="assets/lista-de-precos-led-rental.pdf" data-lead-endpoint="https://formsubmit.co/ajax/thiago@caring.com.br" aria-label="Baixar lista de preços">
+            <div class="price-list-fields">
+              <div class="price-list-field">
+                <label for="price-list-name">Nome</label>
+                <input id="price-list-name" name="nome" autocomplete="name" placeholder="Seu nome" maxlength="120" required />
+              </div>
+              <div class="price-list-field">
+                <label for="price-list-email">E-mail</label>
+                <input id="price-list-email" name="email" type="email" autocomplete="email" placeholder="voce@empresa.com.br" maxlength="254" required />
+              </div>
+              <div class="price-list-field">
+                <label for="price-list-phone">Telefone</label>
+                <input id="price-list-phone" name="telefone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999" pattern="[+0-9\(\) .\-]{10,25}" title="Informe um telefone com DDD, por exemplo (11) 99999-9999." maxlength="25" required />
+              </div>
+              <div class="price-list-field">
+                <label for="price-list-city">Cidade</label>
+                <input id="price-list-city" name="cidade" autocomplete="address-level2" placeholder="Sua cidade / UF" maxlength="120" required />
+              </div>
+            </div>
+            <button class="btn btn-primary" type="submit" disabled aria-describedby="price-list-status">Baixar lista de preços</button>
+            <p class="consent-note">Usaremos seus dados para atender à solicitação da lista de preços. Consulte a <a href="politica-privacidade.html">Política de Privacidade</a>.</p>
+            <p class="price-list-status" id="price-list-status" role="status" aria-live="polite"></p>
+            <a class="price-list-retry" id="price-list-download" hidden>Baixar novamente</a>
+            <noscript><p>Ative o JavaScript para usar o formulário.</p></noscript>
+          </form>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
@@ -758,6 +858,7 @@
         </span>
       </div>
     </footer>
+    <script src="assets/price-list.js" defer></script>
     <script>
       const canvas = document.querySelector("#led-canvas");
       const ctx = canvas.getContext("2d");
