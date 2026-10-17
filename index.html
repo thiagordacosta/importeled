@@ -143,7 +143,7 @@
       }
       .nav-cta:hover { background: #1a2235; }
 
-      @media (max-width: 720px) {
+      @media (max-width: 980px) {
         .nav { display: none; }
       }
 
@@ -344,6 +344,80 @@
       }
       @media (max-width: 860px) { .case-grid { grid-template-columns: 1fr; } }
 
+      /* Featuring */
+      .featuring-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .featuring-card + .featuring-card { margin-top: 24px; }
+      .featuring-project { padding: 32px; }
+      .featuring-photo {
+        margin: 0 0 24px;
+        overflow: hidden;
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+      }
+      .featuring-photo img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .featuring-photo figcaption {
+        padding: 8px 12px;
+        color: var(--ink-soft);
+        font-size: 12px;
+      }
+      .featuring-project h3 {
+        margin: 0 0 10px;
+        font-size: 26px;
+        letter-spacing: -0.02em;
+      }
+      .featuring-project > p { margin: 0; color: var(--ink-soft); }
+      .featuring-savings {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px;
+        background: #f0f5ff;
+      }
+      .featuring-savings h4 {
+        margin: 0 0 8px;
+        font-size: 24px;
+        letter-spacing: -0.02em;
+      }
+      .featuring-savings > p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .featuring-costs { margin: 24px 0 0; }
+      .featuring-costs > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        padding: 16px 0;
+        border-top: 1px solid #d8e3fa;
+      }
+      .featuring-costs dt { color: var(--ink-soft); font-size: 14px; }
+      .featuring-costs dd { margin: 0; font-weight: 600; }
+      .featuring-costs .featuring-total { color: var(--accent); }
+      .featuring-costs .featuring-total dt { color: inherit; font-weight: 600; }
+      @media (max-width: 860px) {
+        .featuring-card { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 520px) {
+        .featuring-project, .featuring-savings { padding: 24px; }
+      }
+
       /* Parcelas */
       .installments {
         display: grid;
@@ -446,6 +520,7 @@
           <a href="#modelo">Modelo</a>
           <a href="#requisitos">Pré-requisitos</a>
           <a href="#caso">Caso de sucesso</a>
+          <a href="#featuring">Featuring</a>
           <a href="#pagamento">Pagamento</a>
         </nav>
         <a
@@ -556,6 +631,74 @@
         </div>
       </section>
 
+      <!-- Featuring: adicionar novos projetos e valores confirmados nesta seção. -->
+      <section class="block" id="featuring" aria-labelledby="featuring-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">Projetos e resultados</p>
+            <h2 id="featuring-title">Featuring</h2>
+            <p>Conheça os projetos com painéis de LED e a economia de importar direto da fábrica.</p>
+          </div>
+          <article class="featuring-card" aria-labelledby="featuring-fullpromo">
+            <div class="featuring-project">
+              <figure class="featuring-photo">
+                <img src="assets/fullpromo-installation.png" alt="Simulação de um painel de LED instalado em um estande de evento" loading="lazy" width="1672" height="941" />
+              </figure>
+              <p class="eyebrow">Projeto em destaque</p>
+              <h3 id="featuring-fullpromo">Fullpromo</h3>
+            </div>
+            <div class="featuring-savings">
+              <p class="eyebrow">Economia no projeto</p>
+              <h4>Resultado da importação</h4>
+              <p>Economia de 41,67% em relação ao orçamento no Brasil.</p>
+              <!-- Comparar orçamentos de mesmo escopo e incluir todos os custos da importação. -->
+              <dl class="featuring-costs">
+                <div>
+                  <dt>Orçamento no Brasil</dt>
+                  <dd>R$ 300.000</dd>
+                </div>
+                <div>
+                  <dt>Custo total da importação</dt>
+                  <dd>R$ 175.000</dd>
+                </div>
+                <div class="featuring-total">
+                  <dt>Economia em R$ e %</dt>
+                  <dd>R$ 125.000 · 41,67%</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+          <article class="featuring-card" aria-labelledby="featuring-aztek">
+            <div class="featuring-project">
+              <figure class="featuring-photo">
+                <img src="assets/aztek-control-room-v4.png" alt="Simulação de sala de controle com quatro estações, cada monitor exibindo uma parte diferente do painel de LED na parede" loading="lazy" width="1672" height="941" />
+              </figure>
+              <p class="eyebrow">Projeto em destaque</p>
+              <h3 id="featuring-aztek">Aztek</h3>
+            </div>
+            <div class="featuring-savings">
+              <p class="eyebrow">Economia no projeto</p>
+              <h4>Resultado da importação</h4>
+              <p>Economia de 40% em relação ao orçamento no Brasil.</p>
+              <dl class="featuring-costs">
+                <div>
+                  <dt>Orçamento no Brasil</dt>
+                  <dd>R$ 125.000</dd>
+                </div>
+                <div>
+                  <dt>Custo total da importação</dt>
+                  <dd>R$ 75.000</dd>
+                </div>
+                <div class="featuring-total">
+                  <dt>Economia em R$ e %</dt>
+                  <dd>R$ 50.000 · 40%</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- Pagamento -->
       <section class="block" id="pagamento" style="padding-top:24px;">
         <div class="container">
@@ -572,7 +715,7 @@
             <div class="inst-card">
               <p class="inst-pct">25%</p>
               <h4>D+30</h4>
-              <p>Parcela vinculada à produção e ao embarque.</p>
+              <p>Parcela vinculada ao fim da produção e ao embarque.</p>
             </div>
             <div class="inst-card">
               <p class="inst-pct">50%</p>
