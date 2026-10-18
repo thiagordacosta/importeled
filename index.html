@@ -484,35 +484,44 @@
         .icms { grid-template-columns: 1fr; padding: 32px; }
       }
 
-      /* Lista de preços */
-      .price-list-grid {
+      /* Calculadora */
+      .calculator-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 56px;
-        align-items: center;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+        gap: 24px;
+        align-items: start;
       }
-      .price-list-copy h2 {
-        margin: 0 0 16px;
-        font-size: clamp(30px, 3.6vw, 42px);
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-      }
-      .price-list-copy > p:not(.eyebrow) { color: var(--ink-soft); }
-      .price-list-form {
+      .calculator-form, .calculator-result {
+        min-width: 0;
         padding: 32px;
         border: 1px solid var(--line);
         border-radius: var(--radius);
         background: #fff;
-        box-shadow: var(--shadow);
       }
-      .price-list-fields { display: grid; gap: 18px; }
-      .price-list-field label {
+      .calculator-form { box-shadow: var(--shadow); }
+      .calculator-form [hidden] { display: none; }
+      .calculator-question { margin: 0 0 24px; padding: 0; border: 0; min-width: 0; }
+      .calculator-question legend, .calculator-question > label {
         display: block;
-        margin-bottom: 6px;
-        font-size: 14px;
+        margin-bottom: 10px;
+        font-size: 15px;
         font-weight: 600;
       }
-      .price-list-field input {
+      .calculator-options { display: flex; gap: 12px; flex-wrap: wrap; }
+      .calculator-choice {
+        display: flex;
+        flex: 1 1 120px;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border: 1px solid #cbd2df;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .calculator-choice:has(input:checked) { border-color: var(--accent); background: #f0f5ff; }
+      .calculator-choice input { accent-color: var(--accent); width: 18px; height: 18px; flex-shrink: 0; }
+      .calculator-question > input, .calculator-question select {
         display: block;
         width: 100%;
         min-height: 48px;
@@ -524,27 +533,31 @@
         font: inherit;
         font-size: 16px;
       }
-      .price-list-field input:focus-visible,
-      .price-list-form .btn:focus-visible {
-        outline: 3px solid var(--accent);
-        outline-offset: 3px;
-      }
-      .price-list-form .btn { margin-top: 24px; width: 100%; justify-content: center; }
-      .price-list-form .btn:disabled { cursor: not-allowed; opacity: .6; transform: none; box-shadow: none; }
-      .price-list-form .consent-note { color: var(--ink-soft); }
-      .price-list-status { margin: 16px 0 0; font-size: 14px; color: var(--ink-soft); }
-      .price-list-status:empty { display: none; }
-      .price-list-retry { display: inline-block; margin-top: 12px; color: var(--accent); text-decoration: underline; }
-      .price-list-retry[hidden] { display: none; }
-      @media (max-width: 1120px) {
-        .site-header .nav { gap: 14px; font-size: 13px; }
-      }
-      @media (max-width: 860px) {
-        .price-list-grid { grid-template-columns: 1fr; gap: 28px; }
-      }
-      @media (max-width: 520px) {
-        .price-list-form { padding: 24px; }
-      }
+      .calculator-form :is(input, select, button):focus-visible,
+      .calculator-result a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+      .calculator-help { margin: 8px 0 0; font-size: 12px; color: var(--ink-soft); }
+      .calculator-form > .btn { width: 100%; justify-content: center; }
+      .calculator-form > .btn:disabled { opacity: .65; cursor: wait; transform: none; }
+      .calculator-status { margin: 16px 0 0; font-size: 14px; color: var(--ink-soft); }
+      .calculator-status:empty { display: none; }
+      .calculator-result { background: #f0f5ff; }
+      .calculator-result h3 { margin: 0 0 12px; font-size: 26px; letter-spacing: -.02em; }
+      .calculator-empty { color: var(--ink-soft); margin: 0; }
+      .calculator-totals { margin: 24px 0; }
+      .calculator-totals > div { padding: 20px 0; border-top: 1px solid #d8e3fa; }
+      .calculator-totals dt { color: var(--ink-soft); font-size: 14px; }
+      .calculator-totals dd { margin: 6px 0; font-size: clamp(26px, 3vw, 38px); line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
+      .calculator-totals .calculator-nationalized dd { color: var(--accent); }
+      .calculator-unit { color: var(--ink-soft); font-size: 13px; }
+      .calculator-details { margin: 0 0 24px; font-size: 14px; }
+      .calculator-details > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 8px 0; }
+      .calculator-details dt { color: var(--ink-soft); }
+      .calculator-details dd { margin: 0; font-weight: 600; }
+      .calculator-result [hidden] { display: none; }
+      .site-header .nav { gap: 16px; font-size: 13px; }
+      @media (max-width: 1080px) { .site-header .nav { display: none; } }
+      @media (max-width: 860px) { .calculator-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 520px) { .calculator-form, .calculator-result { padding: 24px; } }
 
       /* Footer */
       footer.site-footer {
@@ -584,7 +597,7 @@
           <a href="#caso">Caso de sucesso</a>
           <a href="#featuring">Featuring</a>
           <a href="#pagamento">Pagamento</a>
-          <a href="#lista-de-precos">Lista de preços</a>
+          <a href="#calculadora">Calculadora</a>
         </nav>
         <a
           class="nav-cta"
@@ -806,43 +819,91 @@
           </div>
         </div>
       </section>
-      <!-- Lista de preços: envio dos dados e download do PDF. -->
-      <section class="block" id="lista-de-precos" aria-labelledby="price-list-title">
-        <div class="container price-list-grid">
-          <div class="price-list-copy">
-            <p class="eyebrow">Lista de preços</p>
-            <h2 id="price-list-title">Seu próximo projeto começa com os preços na mão.</h2>
-            <p>Preencha seus dados para baixar a lista de preços dos painéis de LED e começar a planejar seu projeto.</p>
-            <p>Precisa de ajuda para escolher? Nosso time pode orientar você sobre a solução para sua instalação.</p>
+      <!-- Calculadora de preços -->
+      <section class="block" id="calculadora" aria-labelledby="calculator-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">Planeje seu projeto</p>
+            <h2 id="calculator-title">Calculadora de preços</h2>
+            <p>Informe os detalhes do painel e veja uma estimativa do preço na origem e nacionalizado.</p>
           </div>
-          <form class="price-list-form" id="price-list-form" action="https://formsubmit.co/thiago@caring.com.br" method="post"
-            data-price-list-url="assets/lista-de-precos-led-rental.pdf" data-lead-endpoint="https://formsubmit.co/ajax/thiago@caring.com.br" aria-label="Baixar lista de preços">
-            <div class="price-list-fields">
-              <div class="price-list-field">
-                <label for="price-list-name">Nome</label>
-                <input id="price-list-name" name="nome" autocomplete="name" placeholder="Seu nome" maxlength="120" required />
+          <div class="calculator-grid">
+            <form class="calculator-form" id="led-calculator" aria-label="Calcular preço do painel de LED">
+              <fieldset class="calculator-question">
+                <legend>Qual é a aplicação do painel de LED?</legend>
+                <div class="calculator-options">
+                  <label class="calculator-choice"><input type="radio" name="application" value="indoor" required checked />Indoor / interno</label>
+                  <label class="calculator-choice"><input type="radio" name="application" value="outdoor" required />Outdoor / externo</label>
+                </div>
+              </fieldset>
+              <fieldset class="calculator-question" aria-describedby="calculator-wall-help">
+                <legend>É uma instalação fixa na parede?</legend>
+                <div class="calculator-options">
+                  <label class="calculator-choice"><input type="radio" name="wall" value="yes" required checked />Sim</label>
+                  <label class="calculator-choice"><input type="radio" name="wall" value="no" required />Não</label>
+                </div>
+                <p class="calculator-help" id="calculator-wall-help">Sem fixação na parede, a estimativa considera gabinetes móveis (rental).</p>
+              </fieldset>
+              <div class="calculator-question">
+                <label for="calculator-pitch">Qual o pixel pitch?</label>
+                <select id="calculator-pitch" name="pitch" aria-describedby="calculator-pitch-help" required disabled>
+                  <option value="">Carregando opções…</option>
+                </select>
+                <p class="calculator-help" id="calculator-pitch-help">Opções disponíveis para a aplicação e a linha escolhidas. Quanto menor o pitch, mais próximos ficam os pixels.</p>
+                <button class="btn btn-ghost" id="calculator-retry-prices" type="button" hidden>Tentar carregar opções novamente</button>
               </div>
-              <div class="price-list-field">
-                <label for="price-list-email">E-mail</label>
-                <input id="price-list-email" name="email" type="email" autocomplete="email" placeholder="voce@empresa.com.br" maxlength="254" required />
+              <div class="calculator-question">
+                <label for="calculator-purpose">Você quer revender, alugar ou usar os painéis?</label>
+                <select id="calculator-purpose" name="purpose" aria-describedby="calculator-purpose-help" required>
+                  <option value="use">Usar os painéis</option>
+                  <option value="resale">Revender os painéis</option>
+                  <option value="rental">Alugar para terceiros / locação</option>
+                </select>
+                <p class="calculator-help" id="calculator-purpose-help">Para locação, usamos a linha rental. A estimativa de compra não inclui margem de revenda.</p>
               </div>
-              <div class="price-list-field">
-                <label for="price-list-phone">Telefone</label>
-                <input id="price-list-phone" name="telefone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999" pattern="[+0-9\(\) .\-]{10,25}" title="Informe um telefone com DDD, por exemplo (11) 99999-9999." maxlength="25" required />
+              <div class="calculator-question">
+                <label for="calculator-area">Qual é o tamanho do painel em metros quadrados?</label>
+                <input id="calculator-area" name="area" type="text" inputmode="decimal" placeholder="Ex.: 12 ou 12,5" pattern="[0-9]+([.,][0-9]+)?" maxlength="12" aria-describedby="calculator-area-help" required />
+                <p class="calculator-help" id="calculator-area-help">Área total em m²: largura × altura. Exemplo: 4 m × 3 m = 12 m².</p>
               </div>
-              <div class="price-list-field">
-                <label for="price-list-city">Cidade</label>
-                <input id="price-list-city" name="cidade" autocomplete="address-level2" placeholder="Sua cidade / UF" maxlength="120" required />
+              <button class="btn btn-primary" type="submit">Calcular preço</button>
+              <p class="calculator-status" id="calculator-status" role="status" aria-live="polite"></p>
+              <noscript><p>Ative o JavaScript para calcular os preços.</p></noscript>
+            </form>
+            <aside class="calculator-result" aria-labelledby="calculator-result-title">
+              <p class="eyebrow">Sua estimativa</p>
+              <h3 id="calculator-result-title">Quanto custa o seu painel?</h3>
+              <p class="calculator-empty" id="calculator-empty">Preencha as cinco informações e clique em calcular para consultar os valores.</p>
+              <div id="calculator-values" hidden>
+                <dl class="calculator-totals">
+                  <div>
+                    <dt>Preço total na origem · US$</dt>
+                    <dd id="calculator-origin-total"></dd>
+                    <span class="calculator-unit" id="calculator-origin-unit"></span>
+                  </div>
+                  <div class="calculator-nationalized">
+                    <dt>Preço total nacionalizado · R$</dt>
+                    <dd id="calculator-nationalized-total"></dd>
+                    <span class="calculator-unit" id="calculator-nationalized-unit"></span>
+                  </div>
+                </dl>
+                <dl class="calculator-details">
+                  <div><dt>Área do painel</dt><dd id="calculator-summary-area"></dd></div>
+                  <div><dt>Linha selecionada</dt><dd id="calculator-summary-family"></dd></div>
+                  <div><dt>Pixel pitch</dt><dd id="calculator-summary-pitch"></dd></div>
+                  <div><dt>LED de referência</dt><dd id="calculator-summary-lamp"></dd></div>
+                  <div><dt>Finalidade</dt><dd id="calculator-summary-purpose"></dd></div>
+                </dl>
+                <p class="calculator-help">Nacionalizado = total na origem em US$ × 12, com resultado em reais. Fator estimado da operação, não uma cotação cambial.</p>
+                <p class="calculator-help">Estimativa pela tabela de preços do site, usando o menor preço disponível para o pitch selecionado. Instalação e estrutura de suporte não estão incluídas. O orçamento final depende da validação do projeto.</p>
+                <a class="btn btn-primary" id="calculator-consultant" href="https://wa.me/5551980295513" rel="noopener">Validar com um consultor</a>
+                <p class="consent-note">Ao abrir a conversa, você autoriza o atendimento sobre esta estimativa. Para interromper contatos, responda PARAR.</p>
               </div>
-            </div>
-            <button class="btn btn-primary" type="submit" disabled aria-describedby="price-list-status">Baixar lista de preços</button>
-            <p class="consent-note">Usaremos seus dados para atender à solicitação da lista de preços. Consulte a <a href="politica-privacidade.html">Política de Privacidade</a>.</p>
-            <p class="price-list-status" id="price-list-status" role="status" aria-live="polite"></p>
-            <a class="price-list-retry" id="price-list-download" hidden>Baixar novamente</a>
-            <noscript><p>Ative o JavaScript para usar o formulário.</p></noscript>
-          </form>
+            </aside>
+          </div>
         </div>
       </section>
+
     </main>
 
     <footer class="site-footer">
@@ -858,7 +919,8 @@
         </span>
       </div>
     </footer>
-    <script src="assets/price-list.js" defer></script>
+    <script src="assets/led-prices.js" defer></script>
+    <script src="assets/led-calculator.js" defer></script>
     <script>
       const canvas = document.querySelector("#led-canvas");
       const ctx = canvas.getContext("2d");
