@@ -622,7 +622,7 @@
             </p>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
               <a class="btn btn-primary" href="https://api.whatsapp.com/send/?phone=5551980295513&text=Ol%C3%A1%2C+autorizo+a+ImporteLED+a+me+atender+pelo+WhatsApp+sobre+pain%C3%A9is+de+LED+e+consultoria+de+importa%C3%A7%C3%A3o.+Se+eu+pedir+PARAR%2C+n%C3%A3o+quero+receber+novos+contatos.&type=phone_number&app_absent=0">Começar orçamento</a>
-              <a class="btn btn-ghost" href="#requisitos">Ver pré-requisitos</a>
+              <a class="btn btn-ghost" href="#calculadora">Calcular preço</a>
             </div>
             <p class="consent-note">
               Ao iniciar uma conversa pelo WhatsApp, você autoriza a ImporteLED a responder sobre este orçamento,
@@ -845,14 +845,6 @@
                 <p class="calculator-help" id="calculator-wall-help">Sem fixação na parede, a estimativa considera gabinetes móveis (rental).</p>
               </fieldset>
               <div class="calculator-question">
-                <label for="calculator-pitch">Qual o pixel pitch?</label>
-                <select id="calculator-pitch" name="pitch" aria-describedby="calculator-pitch-help" required disabled>
-                  <option value="">Carregando opções…</option>
-                </select>
-                <p class="calculator-help" id="calculator-pitch-help">Opções disponíveis para a aplicação e a linha escolhidas. Quanto menor o pitch, mais próximos ficam os pixels.</p>
-                <button class="btn btn-ghost" id="calculator-retry-prices" type="button" hidden>Tentar carregar opções novamente</button>
-              </div>
-              <div class="calculator-question">
                 <label for="calculator-purpose">Você quer revender, alugar ou usar os painéis?</label>
                 <select id="calculator-purpose" name="purpose" aria-describedby="calculator-purpose-help" required>
                   <option value="use">Usar os painéis</option>
@@ -860,6 +852,14 @@
                   <option value="rental">Alugar para terceiros / locação</option>
                 </select>
                 <p class="calculator-help" id="calculator-purpose-help">Para locação, usamos a linha rental. A estimativa de compra não inclui margem de revenda.</p>
+              </div>
+              <div class="calculator-question">
+                <label for="calculator-pitch">Qual o pixel pitch?</label>
+                <select id="calculator-pitch" name="pitch" aria-describedby="calculator-pitch-help" required disabled>
+                  <option value="">Carregando opções…</option>
+                </select>
+                <p class="calculator-help" id="calculator-pitch-help">Opções disponíveis para a aplicação e a linha escolhidas. Quanto menor o pitch, mais próximos ficam os pixels.</p>
+                <button class="btn btn-ghost" id="calculator-retry-prices" type="button" hidden>Tentar carregar opções novamente</button>
               </div>
               <div class="calculator-question">
                 <label for="calculator-area">Qual é o tamanho do painel em metros quadrados?</label>
