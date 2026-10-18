@@ -866,15 +866,20 @@
                 <input id="calculator-area" name="area" type="text" inputmode="decimal" placeholder="Ex.: 12 ou 12,5" pattern="[0-9]+([.,][0-9]+)?" maxlength="12" aria-describedby="calculator-area-help" required />
                 <p class="calculator-help" id="calculator-area-help">Área total em m²: largura × altura. Exemplo: 4 m × 3 m = 12 m².</p>
               </div>
+              <div class="calculator-question">
+                <label for="calculator-whatsapp">Confirme seu WhatsApp</label>
+                <input id="calculator-whatsapp" name="whatsapp" type="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="25" aria-describedby="calculator-whatsapp-help" required />
+                <p class="calculator-help" id="calculator-whatsapp-help">Informe seu número com DDD. Para números internacionais, inclua o código do país.</p>
+              </div>
               <button class="btn btn-primary" type="submit">Calcular preço</button>
-              <p class="consent-note">Ao calcular, os dados desta simulação são enviados à ImporteLED para acompanhamento. Consulte a <a href="politica-privacidade.html">Política de Privacidade</a>.</p>
+              <p class="consent-note">Ao calcular, você autoriza a ImporteLED a usar seu WhatsApp e os dados desta simulação para atender sobre esta estimativa. Para interromper contatos, responda PARAR. Consulte a <a href="politica-privacidade.html">Política de Privacidade</a>.</p>
               <p class="calculator-status" id="calculator-status" role="status" aria-live="polite"></p>
               <noscript><p>Ative o JavaScript para calcular os preços.</p></noscript>
             </form>
             <aside class="calculator-result" aria-labelledby="calculator-result-title">
               <p class="eyebrow">Sua estimativa</p>
               <h3 id="calculator-result-title">Quanto custa o seu painel?</h3>
-              <p class="calculator-empty" id="calculator-empty">Preencha as cinco informações e clique em calcular para consultar os valores.</p>
+              <p class="calculator-empty" id="calculator-empty">Preencha os dados do painel e confirme seu WhatsApp para consultar os valores.</p>
               <div id="calculator-values" hidden>
                 <dl class="calculator-totals">
                   <div>
@@ -886,6 +891,7 @@
                     <dt>Preço total nacionalizado · R$</dt>
                     <dd id="calculator-nationalized-total"></dd>
                     <span class="calculator-unit" id="calculator-nationalized-unit"></span>
+                    <p class="calculator-help" id="calculator-ptax-reference"></p>
                   </div>
                 </dl>
                 <dl class="calculator-details">
@@ -921,7 +927,8 @@
       </div>
     </footer>
     <script src="assets/led-prices.js" defer></script>
-    <script src="assets/led-calculator.js?v=alertas-1" defer></script>
+    <script src="assets/ptax.js" defer></script>
+    <script src="assets/led-calculator.js?v=ptax-1" defer></script>
     <script>
       const canvas = document.querySelector("#led-canvas");
       const ctx = canvas.getContext("2d");

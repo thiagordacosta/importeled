@@ -1,5 +1,4 @@
 (() => {
-  const NATIONALIZATION_FACTOR = 12;
   const FAMILY_LABELS = {
     indoor_fixed_front: "Fixo indoor · manutenção frontal",
     outdoor_fixed_front: "Fixo outdoor · manutenção frontal",
@@ -34,7 +33,7 @@
     return [...new Set(priceRows(input, prices).map((row) => row.pitch))].sort((a, b) => a - b);
   }
 
-  function calculateQuote(input, prices) {
+  function calculateQuote(input, prices, ptax) {
     const family = priceFamily(input);
     const pitch = positiveDecimal(input.pitch);
     const area = positiveDecimal(input.area);
@@ -42,10 +41,23 @@
     const selected = priceRows(input, prices).filter((row) => row.pitch === pitch).sort((a, b) => a.usd_per_m2 - b.usd_per_m2)[0];
     if (!selected) throw new Error("Não há preço disponível para essa configuração. Consulte nosso time.");
     const originTotal = selected.usd_per_m2 * area;
-    const nationalizedTotal = originTotal * NATIONALIZATION_FACTOR;
+    if (!Number.isFinite(ptax?.rate) || ptax.rate <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(ptax.date || "")) {
+      throw new Error("Consulte uma PTAX válida antes de calcular o preço nacionalizado.");
+    }
+    const nationalizationFactor = 2 * ptax.rate * 1.05;
+    const nationalizedTotal = originTotal * nationalizationFactor;
     if (!Number.isFinite(nationalizedTotal)) throw new Error("Confira a área informada e tente novamente.");
     return { ...input, area, family, pitch: selected.pitch, lamp: selected.lamp || "Não informado", usdPerM2: selected.usd_per_m2,
-      originTotal, nationalizedPerM2: selected.usd_per_m2 * NATIONALIZATION_FACTOR, nationalizedTotal };
+      originTotal, nationalizedPerM2: selected.usd_per_m2 * nationalizationFactor, nationalizedTotal, ptax };
+  }
+
+  function normalizeWhatsApp(value) {
+    const text = String(value || "").trim();
+    const digits = text.replace(/\D/g, "");
+    if (!/^\+?[\d\s().-]+$/.test(text) || digits.length < 10 || digits.length > 15 || /^(\d)\1+$/.test(digits)) {
+      throw new Error("Confira seu WhatsApp e informe um número válido com DDD.");
+    }
+    return !text.startsWith("+") && digits.length <= 11 ? `55${digits}` : digits;
   }
 
   async function sendCalculationAlert(quote, endpoint, pageUrl, request = fetch) {
@@ -60,6 +72,8 @@
         body: JSON.stringify({
           _subject: "ImporteLED — nova simulação na calculadora",
           _template: "table",
+          whatsapp: quote.whatsapp,
+          contato_whatsapp: quote.whatsapp ? `https://wa.me/${quote.whatsapp}` : "Não informado",
           evento: "Visitante calculou o preço de um painel de LED",
           data_hora: new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
           pagina: pageUrl,
@@ -73,6 +87,9 @@
           preco_origem_por_m2_usd: quote.usdPerM2,
           preco_total_origem_usd: quote.originTotal,
           preco_total_nacionalizado_brl: quote.nationalizedTotal,
+          ptax_venda: quote.ptax.rate,
+          data_ptax: quote.ptax.date,
+          formula_nacionalizacao: "Origem USD × 2 × PTAX venda × 1,05",
         }),
       });
       if (!response.ok) throw new Error("Calculation alert failed");
@@ -84,7 +101,7 @@
   }
 
   // Allow the same price rules to be verified with Node, without DOM or network calls.
-  if (typeof module !== "undefined" && module.exports) module.exports = { calculateQuote, positiveDecimal, availablePitches, sendCalculationAlert };
+  if (typeof module !== "undefined" && module.exports) module.exports = { calculateQuote, positiveDecimal, availablePitches, sendCalculationAlert, normalizeWhatsApp };
   if (typeof document === "undefined") return;
   const form = document.querySelector("#led-calculator");
   if (!form) return;
@@ -176,12 +193,15 @@
     button.disabled = true;
     button.textContent = "Calculando…";
     form.setAttribute("aria-busy", "true");
-    status.textContent = "Consultando a tabela de preços…";
+    status.textContent = "Consultando preços e PTAX do Banco Central…";
     try {
       // Validate numerical inputs before loading the table.
+      input.whatsapp = normalizeWhatsApp(input.whatsapp);
       positiveDecimal(input.pitch);
       positiveDecimal(input.area);
-      const quote = calculateQuote(input, await loadPrices());
+      if (!globalThis.ImporteLEDPtax) throw new Error("Recarregue a página para consultar a PTAX do Banco Central.");
+      const [prices, ptax] = await Promise.all([loadPrices(), globalThis.ImporteLEDPtax.loadPtax()]);
+      const quote = calculateQuote(input, prices, ptax);
       if (revision !== currentRevision) return;
       text("calculator-origin-total", usd.format(quote.originTotal));
       text("calculator-origin-unit", `${usd.format(quote.usdPerM2)} por m²`);
@@ -192,7 +212,10 @@
       text("calculator-summary-pitch", `P${formatNumber(quote.pitch)}`);
       text("calculator-summary-lamp", quote.lamp);
       text("calculator-summary-purpose", PURPOSE_LABELS[quote.purpose]);
-      const message = `Olá, autorizo a ImporteLED a me atender sobre esta estimativa de painel de LED: ${FAMILY_LABELS[quote.family]}, ${formatNumber(quote.area)} m², P${formatNumber(quote.pitch)}, finalidade: ${PURPOSE_LABELS[quote.purpose]}, fixação na parede: ${quote.wall === "yes" ? "sim" : "não"}. Origem: ${usd.format(quote.originTotal)}. Nacionalizado estimado: ${brl.format(quote.nationalizedTotal)} (fator 12). Se eu pedir PARAR, não quero receber novos contatos.`;
+      const ptaxDate = quote.ptax.date.split("-").reverse().join("/");
+      const ptaxRate = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(quote.ptax.rate);
+      text("calculator-ptax-reference", `PTAX de venda: R$ ${ptaxRate} · fechamento de ${ptaxDate}. Última cotação de fechamento disponível no Banco Central, com acréscimo de 5% aplicado no cálculo.`);
+      const message = `Olá, autorizo a ImporteLED a me atender sobre esta estimativa de painel de LED: ${FAMILY_LABELS[quote.family]}, ${formatNumber(quote.area)} m², P${formatNumber(quote.pitch)}, finalidade: ${PURPOSE_LABELS[quote.purpose]}, fixação na parede: ${quote.wall === "yes" ? "sim" : "não"}. Origem: ${usd.format(quote.originTotal)}. Nacionalizado estimado: ${brl.format(quote.nationalizedTotal)} (origem × 2 × PTAX venda R$ ${ptaxRate} de ${ptaxDate} × 1,05). Se eu pedir PARAR, não quero receber novos contatos.`;
       document.querySelector("#calculator-consultant").href = `https://wa.me/5551980295513?text=${encodeURIComponent(message)}`;
       empty.hidden = true;
       values.hidden = false;
