@@ -48,8 +48,43 @@
       originTotal, nationalizedPerM2: selected.usd_per_m2 * NATIONALIZATION_FACTOR, nationalizedTotal };
   }
 
+  async function sendCalculationAlert(quote, endpoint, pageUrl, request = fetch) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await request(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        signal: controller.signal,
+        keepalive: true,
+        body: JSON.stringify({
+          _subject: "ImporteLED — nova simulação na calculadora",
+          _template: "table",
+          evento: "Visitante calculou o preço de um painel de LED",
+          data_hora: new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
+          pagina: pageUrl,
+          aplicacao: quote.application === "outdoor" ? "Outdoor / externo" : "Indoor / interno",
+          fixa_na_parede: quote.wall === "yes" ? "Sim" : "Não",
+          finalidade: PURPOSE_LABELS[quote.purpose],
+          linha: FAMILY_LABELS[quote.family],
+          pixel_pitch: `P${quote.pitch}`,
+          area_m2: quote.area,
+          led: quote.lamp,
+          preco_origem_por_m2_usd: quote.usdPerM2,
+          preco_total_origem_usd: quote.originTotal,
+          preco_total_nacionalizado_brl: quote.nationalizedTotal,
+        }),
+      });
+      if (!response.ok) throw new Error("Calculation alert failed");
+      const result = await response.json();
+      if (result.success !== true && result.success !== "true") throw new Error("Calculation alert rejected");
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
   // Allow the same price rules to be verified with Node, without DOM or network calls.
-  if (typeof module !== "undefined" && module.exports) module.exports = { calculateQuote, positiveDecimal, availablePitches };
+  if (typeof module !== "undefined" && module.exports) module.exports = { calculateQuote, positiveDecimal, availablePitches, sendCalculationAlert };
   if (typeof document === "undefined") return;
   const form = document.querySelector("#led-calculator");
   if (!form) return;
@@ -162,6 +197,13 @@
       empty.hidden = true;
       values.hidden = false;
       status.textContent = `Estimativa calculada para ${formatNumber(quote.area)} m². Na origem: ${usd.format(quote.originTotal)}. Nacionalizado: ${brl.format(quote.nationalizedTotal)}.`;
+      if (form.dataset?.alertEndpoint) {
+        // An email-service failure must not hide or delay the visitor's result.
+        const pageUrl = `${window.location.origin}${window.location.pathname}`;
+        sendCalculationAlert(quote, form.dataset.alertEndpoint, pageUrl).catch(() => {
+          console.warn("ImporteLED: não foi possível enviar o alerta da calculadora.");
+        });
+      }
     } catch (error) {
       if (revision !== currentRevision) return;
       values.hidden = true;

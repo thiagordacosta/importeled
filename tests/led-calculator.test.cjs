@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { calculateQuote, availablePitches } = require("../assets/led-calculator.js");
+const { calculateQuote, availablePitches, sendCalculationAlert } = require("../assets/led-calculator.js");
 const prices = require("../LED/data/prices_cache.json");
 const base = { application: "indoor", pitch: "1.86", wall: "yes", purpose: "use", area: "12" };
 
@@ -151,4 +151,47 @@ test("Tabela incluída na página mantém os preços originais e permite dropdow
   assert.match(node("calculator-origin-total").textContent, /7\.380,00/);
   assert.match(node("calculator-nationalized-total").textContent, /88\.560,00/);
   assert.equal(node("button").disabled, false);
+
+  // Email delivery is independent of rendering and invalid submissions send nothing.
+  let alertRequests = 0, alertWarnings = 0;
+  form.dataset = { alertEndpoint: "https://example.test/alerts" };
+  Object.assign(context, {
+    window: { location: { origin: "https://example.test", pathname: "/" } },
+    AbortController, setTimeout, clearTimeout,
+    console: { warn() { alertWarnings += 1; } },
+    fetch: async () => { alertRequests += 1; throw new Error("Email provider unavailable"); },
+  });
+  await handlers.submit[0]({ preventDefault() {} });
+  await new Promise(setImmediate);
+  assert.equal(alertRequests, 1);
+  assert.equal(alertWarnings, 1);
+  assert.equal(node("calculator-values").hidden, false);
+  assert.match(node("calculator-status").textContent, /Estimativa calculada/);
+  fields.area = "0";
+  await handlers.submit[0]({ preventDefault() {} });
+  assert.equal(alertRequests, 1);
+});
+
+test("Alerta envia os dados e valores da simulação para o endpoint configurado", async () => {
+  const quote = calculateQuote(base, prices);
+  let sent;
+  await sendCalculationAlert(quote, "https://example.test/alerts", "https://importeled.club/", async (url, options) => {
+    sent = { url, ...options, payload: JSON.parse(options.body) };
+    return { ok: true, json: async () => ({ success: "true" }) };
+  });
+  assert.equal(sent.url, "https://example.test/alerts");
+  assert.equal(sent.method, "POST");
+  assert.equal(sent.keepalive, true);
+  assert.equal(sent.payload.aplicacao, "Indoor / interno");
+  assert.equal(sent.payload.fixa_na_parede, "Sim");
+  assert.equal(sent.payload.pixel_pitch, "P1.86");
+  assert.equal(sent.payload.area_m2, 12);
+  assert.equal(sent.payload.preco_total_origem_usd, 6660);
+  assert.equal(sent.payload.preco_total_nacionalizado_brl, 79920);
+});
+
+test("Alerta detecta falhas HTTP e rejeições do serviço de e-mail", async () => {
+  const quote = calculateQuote(base, prices);
+  await assert.rejects(() => sendCalculationAlert(quote, "https://example.test/alerts", "https://example.test/", async () => ({ ok: false })), /failed/);
+  await assert.rejects(() => sendCalculationAlert(quote, "https://example.test/alerts", "https://example.test/", async () => ({ ok: true, json: async () => ({ success: false }) })), /rejected/);
 });

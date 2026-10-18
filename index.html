@@ -828,7 +828,7 @@
             <p>Informe os detalhes do painel e veja uma estimativa do preço na origem e nacionalizado.</p>
           </div>
           <div class="calculator-grid">
-            <form class="calculator-form" id="led-calculator" aria-label="Calcular preço do painel de LED">
+            <form class="calculator-form" id="led-calculator" data-alert-endpoint="https://formsubmit.co/ajax/thiago@caring.com.br" aria-label="Calcular preço do painel de LED">
               <fieldset class="calculator-question">
                 <legend>Qual é a aplicação do painel de LED?</legend>
                 <div class="calculator-options">
@@ -867,6 +867,7 @@
                 <p class="calculator-help" id="calculator-area-help">Área total em m²: largura × altura. Exemplo: 4 m × 3 m = 12 m².</p>
               </div>
               <button class="btn btn-primary" type="submit">Calcular preço</button>
+              <p class="consent-note">Ao calcular, os dados desta simulação são enviados à ImporteLED para acompanhamento. Consulte a <a href="politica-privacidade.html">Política de Privacidade</a>.</p>
               <p class="calculator-status" id="calculator-status" role="status" aria-live="polite"></p>
               <noscript><p>Ative o JavaScript para calcular os preços.</p></noscript>
             </form>
@@ -919,7 +920,7 @@
       </div>
     </footer>
     <script src="assets/led-prices.js" defer></script>
-    <script src="assets/led-calculator.js" defer></script>
+    <script src="assets/led-calculator.js?v=alertas-1" defer></script>
     <script>
       const canvas = document.querySelector("#led-canvas");
       const ctx = canvas.getContext("2d");
