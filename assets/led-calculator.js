@@ -42,9 +42,9 @@
     if (!selected) throw new Error("Não há preço disponível para essa configuração. Consulte nosso time.");
     const originTotal = selected.usd_per_m2 * area;
     if (!Number.isFinite(ptax?.rate) || ptax.rate <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(ptax.date || "")) {
-      throw new Error("Consulte uma PTAX válida antes de calcular o preço nacionalizado.");
+      throw new Error("Informe uma cotação válida antes de calcular o preço nacionalizado.");
     }
-    const nationalizationFactor = 2 * ptax.rate * 1.05;
+    const nationalizationFactor = 2 * ptax.rate;
     const nationalizedTotal = originTotal * nationalizationFactor;
     if (!Number.isFinite(nationalizedTotal)) throw new Error("Confira a área informada e tente novamente.");
     return { ...input, area, family, pitch: selected.pitch, lamp: selected.lamp || "Não informado", usdPerM2: selected.usd_per_m2,
@@ -87,9 +87,9 @@
           preco_origem_por_m2_usd: quote.usdPerM2,
           preco_total_origem_usd: quote.originTotal,
           preco_total_nacionalizado_brl: quote.nationalizedTotal,
-          ptax_venda: quote.ptax.rate,
-          data_ptax: quote.ptax.date,
-          formula_nacionalizacao: "Origem USD × 2 × PTAX venda × 1,05",
+          cotacao_referencia: quote.ptax.rate,
+          data_referencia: quote.ptax.date,
+          formula_nacionalizacao: "Origem USD × 2 × cotação fixa",
         }),
       });
       if (!response.ok) throw new Error("Calculation alert failed");
@@ -193,13 +193,13 @@
     button.disabled = true;
     button.textContent = "Calculando…";
     form.setAttribute("aria-busy", "true");
-    status.textContent = "Consultando preços e PTAX do Banco Central…";
+    status.textContent = "Calculando com a cotação de referência…";
     try {
       // Validate numerical inputs before loading the table.
       input.whatsapp = normalizeWhatsApp(input.whatsapp);
       positiveDecimal(input.pitch);
       positiveDecimal(input.area);
-      if (!globalThis.ImporteLEDPtax) throw new Error("Recarregue a página para consultar a PTAX do Banco Central.");
+      if (!globalThis.ImporteLEDPtax) throw new Error("Recarregue a página para carregar a cotação de referência.");
       const [prices, ptax] = await Promise.all([loadPrices(), globalThis.ImporteLEDPtax.loadPtax()]);
       const quote = calculateQuote(input, prices, ptax);
       if (revision !== currentRevision) return;
@@ -212,10 +212,9 @@
       text("calculator-summary-pitch", `P${formatNumber(quote.pitch)}`);
       text("calculator-summary-lamp", quote.lamp);
       text("calculator-summary-purpose", PURPOSE_LABELS[quote.purpose]);
-      const ptaxDate = quote.ptax.date.split("-").reverse().join("/");
-      const ptaxRate = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(quote.ptax.rate);
-      text("calculator-ptax-reference", `PTAX de venda: R$ ${ptaxRate} · fechamento de ${ptaxDate}. Última cotação de fechamento disponível no Banco Central, com acréscimo de 5% aplicado no cálculo.`);
-      const message = `Olá, autorizo a ImporteLED a me atender sobre esta estimativa de painel de LED: ${FAMILY_LABELS[quote.family]}, ${formatNumber(quote.area)} m², P${formatNumber(quote.pitch)}, finalidade: ${PURPOSE_LABELS[quote.purpose]}, fixação na parede: ${quote.wall === "yes" ? "sim" : "não"}. Origem: ${usd.format(quote.originTotal)}. Nacionalizado estimado: ${brl.format(quote.nationalizedTotal)} (origem × 2 × PTAX venda R$ ${ptaxRate} de ${ptaxDate} × 1,05). Se eu pedir PARAR, não quero receber novos contatos.`;
+      const ptaxRate = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(quote.ptax.rate);
+      text("calculator-ptax-reference", `Cotação fixa de referência: R$ ${ptaxRate} por US$ 1.`);
+      const message = `Olá, autorizo a ImporteLED a me atender sobre esta estimativa de painel de LED: ${FAMILY_LABELS[quote.family]}, ${formatNumber(quote.area)} m², P${formatNumber(quote.pitch)}, finalidade: ${PURPOSE_LABELS[quote.purpose]}, fixação na parede: ${quote.wall === "yes" ? "sim" : "não"}. Origem: ${usd.format(quote.originTotal)}. Nacionalizado estimado: ${brl.format(quote.nationalizedTotal)} (origem × 2 × cotação fixa de R$ ${ptaxRate}). Se eu pedir PARAR, não quero receber novos contatos.`;
       document.querySelector("#calculator-consultant").href = `https://wa.me/5551980295513?text=${encodeURIComponent(message)}`;
       empty.hidden = true;
       values.hidden = false;

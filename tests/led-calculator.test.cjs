@@ -2,16 +2,16 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { calculateQuote: calculateWithPtax, availablePitches, sendCalculationAlert, normalizeWhatsApp } = require("../assets/led-calculator.js");
 const prices = require("../LED/data/prices_cache.json");
-const ptax = { rate: 5, date: "2026-10-16" }; // Fixed fixture, not the live exchange rate.
+const ptax = { rate: 5.5, date: "2026-10-19" }; // Fixed fixture, not the live exchange rate.
 const calculateQuote = (input, prices) => calculateWithPtax(input, prices, ptax);
 const base = { application: "indoor", pitch: "1.86", wall: "yes", purpose: "use", area: "12" };
 
-test("Calcula origem em dólar e nacionalizado com PTAX, fator 2 e acréscimo de 5%, aceitando área com vírgula", () => {
+test("Calcula origem em dólar e nacionalizado com cotação fixa e fator 2, aceitando área com vírgula", () => {
   const quote = calculateQuote({ ...base, area: "1,25" }, prices);
   assert.equal(quote.usdPerM2, 555);
   assert.equal(quote.originTotal, 693.75);
-  assert.equal(quote.nationalizedTotal, 7284.375);
-  assert.equal(quote.nationalizedPerM2, 5827.5);
+  assert.equal(quote.nationalizedTotal, 7631.25);
+  assert.equal(quote.nationalizedPerM2, 6105);
 });
 
 test("Lista apenas os pitches disponíveis, ordenados e sem duplicação", () => {
@@ -34,7 +34,7 @@ test("Outdoor fixo usa tabela outdoor e não recebe margem de revenda", () => {
   assert.equal(quote.family, "outdoor_fixed_front");
   assert.equal(quote.pitch, 4.81);
   assert.equal(quote.originTotal, 7687.5);
-  assert.equal(quote.nationalizedTotal, 80718.75);
+  assert.equal(quote.nationalizedTotal, 84562.5);
   assert.equal(quote.originTotal, calculateQuote({ ...quote, purpose: "use" }, prices).originTotal);
 });
 
@@ -45,7 +45,7 @@ test("Locação ou montagem móvel seleciona a linha rental da aplicação", () 
   const outdoor = calculateQuote({ ...base, pitch: "2.604", application: "outdoor", purpose: "rental" }, prices);
   assert.equal(outdoor.family, "rental_outdoor");
   assert.equal(outdoor.originTotal, 12756);
-  assert.equal(outdoor.nationalizedTotal, 133938);
+  assert.equal(outdoor.nationalizedTotal, 140316);
 });
 
 test("Rejeita área e pitch inválidos sem produzir estimativa", () => {
@@ -73,7 +73,7 @@ test("Cada opção listada tem preço em todas as combinações de aplicação, 
         for (const pitch of availablePitches({ ...base, application, wall, purpose }, prices)) {
           const quote = calculateQuote({ ...base, application, wall, purpose, pitch }, prices);
           assert.ok(quote.originTotal > 0);
-          assert.equal(quote.nationalizedTotal, quote.originTotal * 2 * ptax.rate * 1.05);
+          assert.equal(quote.nationalizedTotal, quote.originTotal * 2 * ptax.rate);
           combinations += 1;
         }
   assert.equal(combinations, 68);
@@ -152,7 +152,7 @@ test("Tabela incluída na página mantém os preços originais e permite dropdow
   await handlers.submit[0]({ preventDefault() {} });
   assert.equal(node("calculator-values").hidden, false);
   assert.match(node("calculator-origin-total").textContent, /7\.380,00/);
-  assert.match(node("calculator-nationalized-total").textContent, /77\.490,00/);
+  assert.match(node("calculator-nationalized-total").textContent, /81\.180,00/);
   assert.equal(node("button").disabled, false);
 
   // Email delivery is independent of rendering and invalid submissions send nothing.
@@ -196,9 +196,9 @@ test("Alerta envia os dados e valores da simulação para o endpoint configurado
   assert.equal(sent.payload.pixel_pitch, "P1.86");
   assert.equal(sent.payload.area_m2, 12);
   assert.equal(sent.payload.preco_total_origem_usd, 6660);
-  assert.equal(sent.payload.preco_total_nacionalizado_brl, 69930);
-  assert.equal(sent.payload.ptax_venda, 5);
-  assert.equal(sent.payload.data_ptax, "2026-10-16");
+  assert.equal(sent.payload.preco_total_nacionalizado_brl, 73260);
+  assert.equal(sent.payload.cotacao_referencia, 5.5);
+  assert.equal(sent.payload.data_referencia, "2026-10-19");
   assert.equal(sent.payload.whatsapp, "5511999999999");
   assert.equal(sent.payload.contato_whatsapp, "https://wa.me/5511999999999");
   assert.equal(Object.hasOwn(sent.payload, "email"), false);
